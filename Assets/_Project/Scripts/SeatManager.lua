@@ -8,6 +8,7 @@ local e_sendPlayerLeftSeatToServer = Event.new("sendPlayerLeftSeatToServer")
 local e_sendPlayerOccupiedSeatToServer = Event.new("sendPlayerOccupiedSeatToServer")
 local e_requestSeatsFromServer = Event.new("requestSeatStatusFromServer")
 local e_sendSeatsToClient = Event.new("sendSeatsStateToClient")
+local e_sendBeginDateToClient = Event.new("sendBeginDateToClient")
 
 -- Private
 local seats
@@ -28,6 +29,12 @@ function Seats()
         end,
         UpdateSeat = function(self,_id,_newOccupant)
             self._table[_id] = Seat(_id, _newOccupant)
+            if(_newOccupant ~= nil and self:GetPartnerId(_id) ~= nil and self._table[self:GetPartnerId(_id)].occupant ~= nil ) then
+                -- Both players are seated begin date
+                local otherOccupant = self._table[self:GetPartnerId(_id)].occupant
+                e_sendBeginDateToClient:FireClient(_newOccupant,_newOccupant,otherOccupant)
+                e_sendBeginDateToClient:FireClient(otherOccupant,otherOccupant,_newOccupant)
+            end
         end,
         HandleServerPlayerLeft = function(self,playerWhoLeft)
             for k , v in pairs(self._table) do
@@ -37,10 +44,16 @@ function Seats()
                 end
             end
         end,
+        GetPartnerId = function(self,id)
+            local otherId
+            if ( id % 2 == 0 ) then otherId = id - 1
+            else otherId = id + 1 end
+            return self._table[otherId] ~= nil and otherId or nil
+        end,
         GetData = function(self)
             return self._table
         end,
-        HandleClientLeftSeat = function(id)
+        HandleClientLeftSeat = function(self,id)
             e_sendPlayerLeftSeatToServer:FireServer(id)
         end,
         HandleClientWantsToOccupySeat = function(self,id)
@@ -81,6 +94,13 @@ function self:ClientAwake()
         seats = Seats()
         seats:InitializeWithData(newSeatsData)
         common.InvokeEvent(common.ESeatsReceivedFromServer)
+    end)
+
+    e_sendBeginDateToClient:Connect(function(you, partner)
+        if(you == client.localPlayer) then
+            print("Client received begin date & Invokes Event")
+            common.InvokeEvent(common.EBeginDate(),you,partner)
+        end
     end)
 
     e_requestSeatsFromServer:FireServer()

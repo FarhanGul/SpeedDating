@@ -23,7 +23,9 @@ function self:ClientAwake()
     common.SubscribeEvent(common.ESeatsReceivedFromServer,HandleSeatsReceivedFromServer)
     
     common.SubscribeEvent(common.ELocalPlayerLeftSeat(),function()
-        refs.SeatManager().GetSeats().HandleClientLeftSeat(id)
+        if(currentOccupant == client.localPlayer) then
+            refs.SeatManager().GetSeats():HandleClientLeftSeat(id)
+        end
     end)
 
     self.gameObject:GetComponent(TapHandler).Tapped:Connect(function()

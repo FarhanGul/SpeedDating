@@ -11,8 +11,8 @@ local FontSize = {
 }
 
 function self:ClientAwake()
-    -- print(Screen.width .. " x "..Screen.height.." : "..Screen.dpi)
     common.SubscribeEvent(common.ELocalPlayerOccupiedSeat(),ShowSittingAlone)
+    common.SubscribeEvent(common.EBeginDate(),function(args) print("Date Begin : "..args[1].name.." - "..args[2].name) end)
     ShowHome()
 end
 

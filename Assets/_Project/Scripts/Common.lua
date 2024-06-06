@@ -40,3 +40,4 @@ end
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
 function ESeatsReceivedFromServer() return "SeatsReceivedFromServer" end -- void
+function EBeginDate() return "BeginDate" end -- you(Player) , partner(Player)
