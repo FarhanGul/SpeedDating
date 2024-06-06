@@ -1,38 +1,22 @@
 --!Type(Module)
 
 --!SerializeField
-local matchmakerGameObject : GameObject = nil
+local gameUIGameObject : GameObject = nil
 --!SerializeField
-local cardManagerGameObject : GameObject = nil
---!SerializeField
-local audioManagerGameObject : GameObject = nil
---!SerializeField
-local racerUIViewGameObject : GameObject = nil
+local seatManagerGameObject : GameObject = nil
 
-local matchmaker
-local cardManager
-local audioManager
-local racerUIView
+local gameUI
+local seatManager
 
 function self:ClientAwake()
-    matchmaker = matchmakerGameObject:GetComponent("Matchmaker")
-    cardManager = cardManagerGameObject:GetComponent("CardManager")
-    audioManager = audioManagerGameObject:GetComponent("AudioManager")
-    racerUIView = racerUIViewGameObject:GetComponent("RacerUIView")
+    gameUI = gameUIGameObject:GetComponent("GameUI")
+    seatManager = seatManagerGameObject:GetComponent("SeatManager")
 end
 
-function Matchmaker()
-    return matchmaker
+function GameUI()
+    return gameUI
 end
 
-function CardManager()
-    return cardManager
-end
-
-function AudioManager()
-    return audioManager
-end
-
-function RacerUIView()
-    return racerUIView
+function SeatManager()
+    return seatManager
 end
