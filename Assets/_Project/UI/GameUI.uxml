@@ -7,7 +7,7 @@
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
 
-  <hr:UILuaView name="root" class="game-u-i">
+  <hr:UILuaView name="root" class="game-u-i" picking-mode="Ignore">
   </hr:UILuaView>
 
 </UXML>

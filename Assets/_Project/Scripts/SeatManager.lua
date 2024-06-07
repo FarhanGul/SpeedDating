@@ -98,7 +98,6 @@ function self:ClientAwake()
 
     e_sendBeginDateToClient:Connect(function(you, partner)
         if(you == client.localPlayer) then
-            print("Client received begin date & Invokes Event")
             common.InvokeEvent(common.EBeginDate(),you,partner)
         end
     end)
