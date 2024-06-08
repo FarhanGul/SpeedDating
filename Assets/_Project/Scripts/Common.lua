@@ -37,8 +37,28 @@ function UnsubscribeEvent(eventName,callback)
     table.remove(events[eventName],callback)
 end
 
+function ShuffleArray(arr)
+    local n = #arr
+    for i = n, 2, -1 do
+        local j = math.random(i) -- Generate a random index
+        arr[i], arr[j] = arr[j], arr[i] -- Swap elements
+    end
+end
+
+function GetRandomExcluding(from, to, exclude)
+    local rand = math.random(from , to)
+    while( exclude[rand] ~= nil) do
+        rand = math.random(from , to)
+    end
+    return rand
+end
+
+
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
 function ESeatsReceivedFromServer() return "SeatsReceivedFromServer" end -- void
-function EBeginDate() return "BeginDate" end -- you(Player) , partner(Player)
+function EBeginDate() return "BeginDate" end -- you(Player) , partner(Player) , isYourTurnFirst(Bool)
 function EPrivateMessageSent() return "PrivateMessageSent" end -- from(Player) , message(string)
+function ETurnStarted() return "TurnStarted" end -- isMyTurn(Bool)
+function ELocalPlayerSelectedQuestion() return "LocalPlayerSelectedQuestion" end -- question(string)
+function EPlayerReceivedQuestionFromServer() return "PlayerReceivedQuestion" end -- question(string)

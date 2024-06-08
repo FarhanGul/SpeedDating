@@ -32,8 +32,9 @@ function Seats()
             if(_newOccupant ~= nil and self:GetPartnerId(_id) ~= nil and self._table[self:GetPartnerId(_id)].occupant ~= nil ) then
                 -- Both players are seated begin date
                 local otherOccupant = self._table[self:GetPartnerId(_id)].occupant
-                e_sendBeginDateToClient:FireClient(_newOccupant,_newOccupant,otherOccupant)
-                e_sendBeginDateToClient:FireClient(otherOccupant,otherOccupant,_newOccupant)
+                local firstTurn = math.random(1,2)
+                e_sendBeginDateToClient:FireClient(_newOccupant,_newOccupant,otherOccupant,firstTurn == 1)
+                e_sendBeginDateToClient:FireClient(otherOccupant,otherOccupant,_newOccupant,firstTurn == 2)
             end
         end,
         HandleServerPlayerLeft = function(self,playerWhoLeft)
@@ -96,9 +97,9 @@ function self:ClientAwake()
         common.InvokeEvent(common.ESeatsReceivedFromServer)
     end)
 
-    e_sendBeginDateToClient:Connect(function(you, partner)
+    e_sendBeginDateToClient:Connect(function(you, partner,isYourTurnFirst)
         if(you == client.localPlayer) then
-            common.InvokeEvent(common.EBeginDate(),you,partner)
+            common.InvokeEvent(common.EBeginDate(),you,partner,isYourTurnFirst)
         end
     end)
 
