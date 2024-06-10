@@ -1758,6 +1758,7 @@ MonoBehaviour:
   _uiOutput: 2
   _uiOutputSettings:
     rid: -2
+  m_isDebuggingEnabled: 0
   references:
     version: 2
     RefIds:

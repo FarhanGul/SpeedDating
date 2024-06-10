@@ -2,7 +2,7 @@
 
 local common = require("Common")
 local partner
-local isMyTurn
+local isMyTurnToQuestion
 local waitingForAnswer = false
 
 -- Events
@@ -36,29 +36,28 @@ end
 
 function BeginGame(args)
     partner = args[2]
-    isMyTurn = args[3]
-    print(client.localPlayer.name.."@ IsMyTurn : "..tostring(isMyTurn))
-    Timer.new(1,function() StartTurn() end,false)
+    isMyTurnToQuestion = args[3]
+    Timer.new(4,function() StartTurn() end,false)
 end
 
 function StartTurn()
     local randomQuestions = nil
-    if(isMyTurn) then randomQuestions = GetRandomQuestions() end
-    common.InvokeEvent(common.ETurnStarted(),isMyTurn,randomQuestions)
+    if(isMyTurnToQuestion) then randomQuestions = GetRandomQuestions() end
+    common.InvokeEvent(common.ETurnStarted(),isMyTurnToQuestion,randomQuestions)
 end
 
 function ChangeTurn()
-    isMyTurn = not isMyTurn
+    isMyTurnToQuestion = not isMyTurnToQuestion
     StartTurn()
 end
 
 function HandlePlayerSelectedQuestion(args)
-    print("Dialogue Game HandlePlayer Selected Question : "..args[1])
     e_sendPlayerQuestionToServer:FireServer(partner,args[1])
 end
 
 function HandlePrivateMessageSent(args)
     if(waitingForAnswer and args[1] == client.localPlayer) then
+        waitingForAnswer = false
         e_sendTurnChangedToServer:FireServer(partner)
         ChangeTurn()
     end

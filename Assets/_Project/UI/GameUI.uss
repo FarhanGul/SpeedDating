@@ -3,10 +3,14 @@
     height: 100%;
 }
 
-.test {
-    flex-direction: row;
+.ScrollViewContent {
+    flex-direction: column;
     flex-wrap: wrap;
-    background-color: red;
+    width: 100%;
+}
+
+.ChatMessage{
+    width: 100%;
 }
 
 *{

@@ -15,8 +15,11 @@ function self:ClientAwake()
         StartPrivateChat(args[2])
     end)
     Chat.TextMessageReceivedHandler:Connect(function(channel,_from,_message)
-        if( enableDevMode and _from == client.localPlayer and string.sub(_message,1,1) == "@") then
-            HandleDevMode(string.sub(_message,2,-1))
+        if( enableDevMode and string.sub(_message,1,1) == "@") then
+            if(_from == client.localPlayer) then
+                HandleDevMode(string.sub(_message,2,-1))
+            end
+            return
         end
         if(partner ~= nil) then
             if(_from == client.localPlayer or _from == partner) then

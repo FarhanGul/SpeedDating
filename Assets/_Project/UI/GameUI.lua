@@ -21,9 +21,13 @@ local Colors = {
     blue = Color.new(115/255, 185/255, 1),
 }
 
+--!SerializeField
+local isDebuggingEnabled : boolean = false
+
 -- Private
-local chatPanel : VisualElement
+local chatPanel : UIScrollView
 local gamePanel : VisualElement
+local partner
 
 -- Functions
 function self:ClientAwake()
@@ -32,12 +36,12 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EPrivateMessageSent(),HandlePrivateMessage)
     common.SubscribeEvent(common.ETurnStarted(),ShowGameTurn)
     common.SubscribeEvent(common.EPlayerReceivedQuestionFromServer(),ShowQuestionReceived)
-    -- ShowHome()
-    ShowScrollViewTest()
+    common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),ShowQuestionSubmitted)
+    if(isDebuggingEnabled) then ShowDebugUI() else ShowHome() end
 end
 
 function ShowSittingAlone()
-    if(chatPanel ~= nil) then return end
+    if(partner ~= nil) then return end
     root:Clear()
     local panel = VisualElement.new()
     panel:Add(CreateLabel("Please wait for a partner to join you at the table",FontSize.heading))
@@ -56,20 +60,34 @@ function ShowDialgoueGame()
     SetRelativeSize(gamePanel, 100, 50)
     gamePanel.style.backgroundColor = StyleColor.new(Colors.white)
     gamePanel:Add(CreateLabel("Game View",FontSize.heading,Colors.black))
-    chatPanel = VisualElement.new()
+
+    -- chatPanel = VisualElement.new()
+    -- SetRelativeSize(chatPanel, 100, 50)
+    -- chatPanel.style.backgroundColor = StyleColor.new(Colors.grey)
+
+    chatPanel = UIScrollView.new()
     SetRelativeSize(chatPanel, 100, 50)
+    chatPanel.contentContainer:AddToClassList("ScrollViewContent")
     chatPanel.style.backgroundColor = StyleColor.new(Colors.grey)
+
     mainPanel:Add(gamePanel)
     mainPanel:Add(chatPanel)
     root:Add(mainPanel)
 end
 
 function ShowQuestionReceived(args)
-    print("UI received question "..args[1])
+    HandlePrivateMessage({partner,args[1]})
     gamePanel:Clear()
     gamePanel:Add(CreateLabel("It is your turn to answer",FontSize.heading,Colors.black))
     gamePanel:Add(CreateLabel(args[1],FontSize.normal,Colors.lightGrey))
 end
+
+function ShowQuestionSubmitted(args)
+    HandlePrivateMessage({client.localPlayer,args[1]})
+    gamePanel:Clear()
+    gamePanel:Add(CreateLabel("Your partner is thinking of an answer please wait",FontSize.heading,Colors.black))
+end
+
 
 function ShowGameTurn(args)
     if(gamePanel == nil) then ShowDialgoueGame() end
@@ -82,44 +100,48 @@ function ShowGameTurn(args)
             end))
         end
     else
-        gamePanel:Add(CreateLabel("Your partner is thinking of a question please wait",FontSize.heading,Colors.black))
+        gamePanel:Add(CreateLabel("It is your partner's turn to ask a question, please wait",FontSize.heading,Colors.black))
     end
 end
 
 function ShowDialgoueGameIntro(args)
+    print("Show Dialogue Intro")
+    partner = args[2]
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(CreateLabel("You are dating "..args[2].name),FontSize.normal,Colors.black)
+    SetBackgroundColor(panel, Colors.white)
     SetRelativeSize(panel, 100, 100)
+    panel:Add(CreateLabel("You are dating "..args[2].name,FontSize.normal,Colors.black))
     root:Add(panel)
 end
 
 function HandlePrivateMessage(args)
+    print(client.localPlayer.name.." - Game UI received private message : "..args[2].." - Chat panel is nil "..tostring(chatPanel == nil))
     if(chatPanel ~= nil) then
         chatPanel:Add(CreateChatMessage(args[1], args[2]))
+        chatPanel:AdjustScrollOffsetForNewContent()
     end
 end
 
 function CreateChatMessage(player,message)
     local panel = VisualElement.new()
+    panel:AddToClassList("ChatMessage")
     panel.style.backgroundColor = player == client.localPlayer and StyleColor.new(Colors.white) or StyleColor.new(Colors.black)
     panel:Add(CreateLabel(message, FontSize.normal,player == client.localPlayer and StyleColor.new(Colors.black) or StyleColor.new(Colors.white)))
     SetMargin(panel, 0.02)
     return panel
 end
 
-function ShowScrollViewTest()
+function ShowDebugUI()
     root:Clear()
-    local panel = VisualElement.new()
-    local scrollView = UIScrollView.new()
-    scrollView.style.height = StyleLength.new(Length.new(500))
-    scrollView.style.width = StyleLength.new(Length.new(500))
-    for i = 1, 100 do
-        scrollView:Add(CreateLabel(i.." A quick brown fox jumped over a lazy dog", FontSize.normal,Colors.blue))
-    end
-    scrollView.contentContainer:AddToClassList("test")
-    panel:Add(scrollView)
-    root:Add(panel)
+    chatPanel = UIScrollView.new()
+    chatPanel.contentContainer:AddToClassList("ScrollViewContent")
+    chatPanel.style.backgroundColor = StyleColor.new(Colors.grey)
+    root:Add(chatPanel)
+    root:Add(CreateButton("Send Chat",function()
+        chatPanel:Add(CreateChatMessage(client.localPlayer,math.random(1,100000000)))
+        chatPanel:AdjustScrollOffsetForNewContent()
+    end))
 end
 
 function ShowHome()
@@ -175,6 +197,11 @@ function SetBackgroundColor(ve:VisualElement,color)
 end
 
 function SetRelativeSize(ve : VisualElement,w,h)
-    ve.style.width = StyleLength.new(Length.Percent(w))
-    ve.style.height = StyleLength.new(Length.Percent(h))
+    if(w > -1) then ve.style.width = StyleLength.new(Length.Percent(w)) end
+    if(h > -1) then ve.style.height = StyleLength.new(Length.Percent(h)) end
+end
+
+function SetSize(ve : VisualElement,w,h)
+    if(w > -1) then ve.style.width = StyleLength.new(Length.new(w)) end
+    if(h > -1) then ve.style.height = StyleLength.new(Length.new(h)) end
 end
