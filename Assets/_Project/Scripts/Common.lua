@@ -53,12 +53,18 @@ function GetRandomExcluding(from, to, exclude)
     return rand
 end
 
-
+-- Events
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
-function ESeatsReceivedFromServer() return "SeatsReceivedFromServer" end -- void
 function EBeginDate() return "BeginDate" end -- you(Player) , partner(Player) , isYourTurnFirst(Bool)
 function EPrivateMessageSent() return "PrivateMessageSent" end -- from(Player) , message(string)
 function ETurnStarted() return "TurnStarted" end -- isMyTurn(Bool)
 function ELocalPlayerSelectedQuestion() return "LocalPlayerSelectedQuestion" end -- question(string)
 function EPlayerReceivedQuestionFromServer() return "PlayerReceivedQuestion" end -- question(string)
+function EPlayerLeftSeat() return "PlayerLeftSeat" end -- player(Player)
+function EEndDate() return "EndDate" end -- resultStatus(Enum)
+function EUpdateSeatOccupant() return "UpdateSeatOccupant" end -- seats(Seats)
+function ETryToOccupySeat() return "TryToOccupySeat" end -- id(integer)
+
+--Enumerations
+function NResultStatusCancelled() return "ResultStatusCancelled" end

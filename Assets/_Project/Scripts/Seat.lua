@@ -2,7 +2,6 @@
 
 -- Require
 local common = require("Common")
-local refs = require("References")
 local characterController = require("PlayerCharacterController")
 
 -- Private
@@ -11,30 +10,18 @@ local id
 local currentOccupant
 
 -- Functions
-function self:ServerAwake()
-
-end
-
 function self:ClientAwake()
     currentOccupant = nil
     id = self.transform:GetSiblingIndex() + 1
     contact = self.transform:Find("Contact")
-
-    common.SubscribeEvent(common.ESeatsReceivedFromServer,HandleSeatsReceivedFromServer)
-    
-    common.SubscribeEvent(common.ELocalPlayerLeftSeat(),function()
-        if(currentOccupant == client.localPlayer) then
-            refs.SeatManager().GetSeats():HandleClientLeftSeat(id)
-        end
-    end)
-
+    common.SubscribeEvent(common.EUpdateSeatOccupant(),HandleUpdateSeatOccupant)
     self.gameObject:GetComponent(TapHandler).Tapped:Connect(function()
-        refs.SeatManager().GetSeats():HandleClientWantsToOccupySeat(id)
+        common.InvokeEvent(common.ETryToOccupySeat(),id)
     end)
 end
 
-function HandleSeatsReceivedFromServer()
-    local newData = refs.SeatManager().GetSeats():GetData()[id]
+function HandleUpdateSeatOccupant(args)
+    local newData = args[1]:GetData()[id]
     if ( newData ~= nil and currentOccupant ~= newData.occupant) then
         if(currentOccupant == nil and newData.occupant ~= nil) then
             OccupySeat(newData.occupant)
@@ -63,4 +50,5 @@ function LeaveSeat(player)
     if(player == client.localPlayer)then
         characterController.options.enabled = true
     end
+    common.InvokeEvent(common.EPlayerLeftSeat(),player)
 end

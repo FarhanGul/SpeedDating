@@ -16,5 +16,6 @@
 *{
     white-space: normal;
     align-items: center;
+    justify-content: center;
     -unity-text-align: middle-center;
 }

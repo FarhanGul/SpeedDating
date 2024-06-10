@@ -1,6 +1,5 @@
 --!Type(Client)
 local common = require("Common")
-local refs = require("References")
 
 --!SerializeField
 local enableDevMode : boolean = false
@@ -34,7 +33,7 @@ end
 
 function HandleDevMode(message)
     if(message == "sit") then
-        refs.SeatManager().GetSeats():HandleClientWantsToOccupySeat(1)
+        common.InvokeEvent(common.ETryToOccupySeat(),1)
     elseif(message == "question") then
         common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),"This is a debug question")
     end

@@ -37,7 +37,24 @@ function self:ClientAwake()
     common.SubscribeEvent(common.ETurnStarted(),ShowGameTurn)
     common.SubscribeEvent(common.EPlayerReceivedQuestionFromServer(),ShowQuestionReceived)
     common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),ShowQuestionSubmitted)
+    common.SubscribeEvent(common.EEndDate(),HandleDateEnd)
     if(isDebuggingEnabled) then ShowDebugUI() else ShowHome() end
+end
+
+function HandleDateEnd(args)
+    local result = args[1]
+    root:Clear()
+    local panel = VisualElement.new()
+    SetBackgroundColor(panel, Colors.white)
+    SetRelativeSize(panel, 100, 100)
+    if(result == common.NResultStatusCancelled()) then
+        panel:Add(CreateLabel("Partner left",FontSize.heading,Colors.black))
+        panel:Add(CreateLabel("Looks like your partner left the world",FontSize.normal,FontSize.heading,Colors.black))
+        panel:Add(CreateButton("Continue", function()
+            ShowHome()
+        end))
+    end
+    root:Add(panel)
 end
 
 function ShowSittingAlone()
@@ -105,7 +122,6 @@ function ShowGameTurn(args)
 end
 
 function ShowDialgoueGameIntro(args)
-    print("Show Dialogue Intro")
     partner = args[2]
     root:Clear()
     local panel = VisualElement.new()
@@ -116,7 +132,6 @@ function ShowDialgoueGameIntro(args)
 end
 
 function HandlePrivateMessage(args)
-    print(client.localPlayer.name.." - Game UI received private message : "..args[2].." - Chat panel is nil "..tostring(chatPanel == nil))
     if(chatPanel ~= nil) then
         chatPanel:Add(CreateChatMessage(args[1], args[2]))
         chatPanel:AdjustScrollOffsetForNewContent()

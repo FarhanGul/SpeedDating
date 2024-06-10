@@ -62,6 +62,14 @@ function Seats()
             if ( self._table[id] == nil or self._table[id].occupant == nil ) then
                 e_sendPlayerOccupiedSeatToServer:FireServer(id)
             end
+        end,
+        GetLocalPlayerSeat = function(self,id)
+            for k , v in pairs(self._table) do
+                if ( v.occupant == client.localPlayer ) then
+                    return v
+                end
+            end
+            return nil
         end
     }
 end
@@ -91,16 +99,25 @@ function self:ServerAwake()
 end
 
 function self:ClientAwake()
+
     e_sendSeatsToClient:Connect(function(newSeatsData)
         seats = Seats()
         seats:InitializeWithData(newSeatsData)
-        common.InvokeEvent(common.ESeatsReceivedFromServer)
+        common.InvokeEvent(common.EUpdateSeatOccupant(),seats)
     end)
 
     e_sendBeginDateToClient:Connect(function(you, partner,isYourTurnFirst)
         if(you == client.localPlayer) then
             common.InvokeEvent(common.EBeginDate(),you,partner,isYourTurnFirst)
         end
+    end)
+   
+    common.SubscribeEvent(common.ELocalPlayerLeftSeat(),function()
+        seats:HandleClientLeftSeat(seats:GetLocalPlayerSeat().id)
+    end)
+
+    common.SubscribeEvent(common.ETryToOccupySeat(),function(args)
+        seats:HandleClientWantsToOccupySeat(args[1])
     end)
 
     e_requestSeatsFromServer:FireServer()
