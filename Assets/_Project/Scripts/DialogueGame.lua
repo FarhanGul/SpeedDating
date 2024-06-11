@@ -38,7 +38,9 @@ end
 function BeginGame(args)
     partner = args[2]
     isMyTurnToQuestion = args[3]
-    Timer.new(2.5,function() StartTurn() end,false)
+    Timer.new(2.5,function() 
+        if(partner ~= nil) then StartTurn() end
+    end,false)
 end
 
 function StartTurn()
@@ -74,7 +76,6 @@ function EndGame(resultStatus)
     partner = nil
     waitingForAnswer = nil
     common.InvokeEvent(common.EEndDate(),resultStatus)
-    common.InvokeEvent(common.ELocalPlayerLeftSeat())
 end
 
 function GetResultStatusCancelled() return "ResultStatusCancelled" end

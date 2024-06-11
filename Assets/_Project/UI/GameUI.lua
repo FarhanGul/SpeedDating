@@ -42,6 +42,9 @@ function self:ClientAwake()
 end
 
 function HandleDateEnd(args)
+    partner = nil
+    gamePanel = nil
+    chatPanel = nil
     local result = args[1]
     root:Clear()
     local panel = VisualElement.new()
@@ -49,12 +52,14 @@ function HandleDateEnd(args)
     SetRelativeSize(panel, 100, 100)
     if(result == common.NResultStatusCancelled()) then
         panel:Add(CreateLabel("Partner left",FontSize.heading,Colors.black))
-        panel:Add(CreateLabel("Looks like your partner left the world",FontSize.normal,FontSize.heading,Colors.black))
-        panel:Add(CreateButton("Continue", function()
-            ShowHome()
-        end))
+        panel:Add(CreateLabel("Looks like your partner left the world",FontSize.normal,Colors.black))
     end
     root:Add(panel)
+    Timer.new(common.TSeatAvailabilityCooldown(), function()
+        if(result == common.NResultStatusCancelled()) then
+            ShowSittingAlone()
+        end
+    end,false)
 end
 
 function ShowSittingAlone()
@@ -77,10 +82,6 @@ function ShowDialgoueGame()
     SetRelativeSize(gamePanel, 100, 50)
     gamePanel.style.backgroundColor = StyleColor.new(Colors.white)
     gamePanel:Add(CreateLabel("Game View",FontSize.heading,Colors.black))
-
-    -- chatPanel = VisualElement.new()
-    -- SetRelativeSize(chatPanel, 100, 50)
-    -- chatPanel.style.backgroundColor = StyleColor.new(Colors.grey)
 
     chatPanel = UIScrollView.new()
     SetRelativeSize(chatPanel, 100, 50)

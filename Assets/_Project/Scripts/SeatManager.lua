@@ -42,6 +42,7 @@ function Seats()
                 if ( v.occupant == playerWhoLeft ) then
                     self:UpdateSeat(v.id,nil)
                     e_sendSeatsToClient:FireAllClients(seats:GetData())
+                    return
                 end
             end
         end,

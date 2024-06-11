@@ -31,7 +31,6 @@ function SubscribeEvent(eventName,callback)
     table.insert(events[eventName],callback)
 end
 
-
 function UnsubscribeEvent(eventName,callback)
     if(events[eventName] == nil) then events[eventName] = {} end
     table.remove(events[eventName],callback)
@@ -68,3 +67,6 @@ function ETryToOccupySeat() return "TryToOccupySeat" end -- id(integer)
 
 --Enumerations
 function NResultStatusCancelled() return "ResultStatusCancelled" end
+
+-- Duration
+function TSeatAvailabilityCooldown() return 2 end
