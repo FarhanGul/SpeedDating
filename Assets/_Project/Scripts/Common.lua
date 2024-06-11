@@ -61,12 +61,34 @@ function ETurnStarted() return "TurnStarted" end -- isMyTurn(Bool)
 function ELocalPlayerSelectedQuestion() return "LocalPlayerSelectedQuestion" end -- question(string)
 function EPlayerReceivedQuestionFromServer() return "PlayerReceivedQuestion" end -- question(string)
 function EPlayerLeftSeat() return "PlayerLeftSeat" end -- player(Player)
-function EEndDate() return "EndDate" end -- resultStatus(Enum)
+function EUpdateResultStatus() return "UpdateResultStatus" end -- resultStatus(Enum ResultStatus)
 function EUpdateSeatOccupant() return "UpdateSeatOccupant" end -- seats(Seats)
 function ETryToOccupySeat() return "TryToOccupySeat" end -- id(integer)
+function ESubmitVerdict() return "SubmitVerdict" end -- verdict(Enum Verdict)
 
---Enumerations
+-- Enumerations
+-- Result Status
 function NResultStatusCancelled() return "ResultStatusCancelled" end
+function NResultStatusAcceptancePending() return "ResultStatusAcceptancePending" end
+function NResultStatusAvailabilityPending() return "ResultStatusAvailabilityPending" end
+function NResultStatusRejected() return "ResultStatusRejected" end
+function NResultStatusBothAccepted() return "ResultStatusBothAccepted" end
+function NResultStatusUnrequited() return "ResultStatusUnrequited" end
+function NResultStatusPlayAgain() return "ResultStatusPlayAgain" end
+function NResultStatusIWillPlayLater() return "ResultStatusIWillPlayLater" end
+function NResultStatusPartnerWillPlayLater() return "ResultStatusPartnerWillPlayLater" end
+
+-- Verdict
+function NVerdictAccept() return "VerdictAccept" end
+function NVerdictReject() return "VerdictReject" end
+function NVerdictPlayAgain() return "VerdictPlayAgain" end
+function NVerdictPlayLater() return "VerdictPlayLater" end
+-- Verdict Type
+function NVerdictTypeAcceptance() return "VerdictTypeAcceptance" end
+function NVerdictTypeAvailability() return "VerdictTypeAvailability" end
 
 -- Duration
-function TSeatAvailabilityCooldown() return 2 end
+function TSeatAvailabilityCooldown() return 4 end
+
+-- Constants
+function CRequiredProgress() return 4 end

@@ -7,8 +7,8 @@ local root : VisualElement = nil
 
 -- Configuration
 local FontSize = {
-    normal = 0.08,
-    heading = 0.1
+    normal = 0.05,
+    heading = 0.07
 }
 
 local Colors = {
@@ -27,7 +27,9 @@ local isDebuggingEnabled : boolean = false
 -- Private
 local chatPanel : UIScrollView
 local gamePanel : VisualElement
+local progressBar : UIProgressBar
 local partner
+local progress
 
 -- Functions
 function self:ClientAwake()
@@ -37,29 +39,90 @@ function self:ClientAwake()
     common.SubscribeEvent(common.ETurnStarted(),ShowGameTurn)
     common.SubscribeEvent(common.EPlayerReceivedQuestionFromServer(),ShowQuestionReceived)
     common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),ShowQuestionSubmitted)
-    common.SubscribeEvent(common.EEndDate(),HandleDateEnd)
+    common.SubscribeEvent(common.EUpdateResultStatus(),HandleResultStatusUpdated)
     if(isDebuggingEnabled) then ShowDebugUI() else ShowHome() end
 end
 
-function HandleDateEnd(args)
+function ShowVerdictPending(panel)
+    panel:Add(CreateLabel("Please wait for your partners verdict",FontSize.heading,Colors.black))
+end
+
+function ShowResultStatusBothAccepted(panel)
+    panel:Add(CreateLabel("Your date was a success!",FontSize.heading,Colors.black))
+    panel:Add(CreateLabel("Keep dating to improve your relationship score",FontSize.normal,Colors.black))
+    panel:Add(CreateButton("Date again", function()
+        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayAgain())
+    end))
+    panel:Add(CreateLabel("OR",FontSize.heading,Colors.black))
+    panel:Add(CreateButton("Catch you later", function()
+        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
+    end))
+    panel:Add(CreateLabel("Speed date with different partners to improve your dating score",FontSize.normal,Colors.black))
+end
+
+function ShowResultStatusRejected(panel)
+    panel:Add(CreateLabel("You were rejected",FontSize.heading,Colors.black))
+    panel:Add(CreateLabel("\"Rejection is merely a redirection\"",FontSize.normal,Colors.grey))
+    panel:Add(CreateLabel("You will not be able to play again with your partner until tomorrow",FontSize.normal,Colors.black))
+end
+
+function ShowResultStatusUnrequited(panel)
+    panel:Add(CreateLabel("Unrequited love",FontSize.heading,Colors.black))
+    panel:Add(CreateLabel("Your partner accepted you but you rejected them",FontSize.normal,Colors.grey))
+    panel:Add(CreateLabel("You will not be able to play again with your partner until tomorrow",FontSize.normal,Colors.black))
+end
+
+function ShowResultStatusPartnerWillPlayLater(panel)
+    panel:Add(CreateLabel("Your partner had to leave",FontSize.heading,Colors.black))
+    panel:Add(CreateLabel("They will catch you later",FontSize.normal,Colors.grey))
+end
+
+function ShowResultStatusPartnerLeft(panel)
+    panel:Add(CreateLabel("Partner left",FontSize.heading,Colors.black))
+    panel:Add(CreateLabel("Looks like your partner left the world",FontSize.normal,Colors.black))
+end
+
+function UninitializeDialogueGame()
     partner = nil
     gamePanel = nil
     chatPanel = nil
-    local result = args[1]
-    root:Clear()
-    local panel = VisualElement.new()
-    SetBackgroundColor(panel, Colors.white)
-    SetRelativeSize(panel, 100, 100)
-    if(result == common.NResultStatusCancelled()) then
-        panel:Add(CreateLabel("Partner left",FontSize.heading,Colors.black))
-        panel:Add(CreateLabel("Looks like your partner left the world",FontSize.normal,Colors.black))
-    end
-    root:Add(panel)
-    Timer.new(common.TSeatAvailabilityCooldown(), function()
-        if(result == common.NResultStatusCancelled()) then
-            ShowSittingAlone()
+    progressBar = nil
+end
+
+function HandleResultStatusUpdated(args)
+    local resultStatus = args[1]
+    local panel = RenderFullScreenPanel()
+    local unintialzie = true
+    if ( resultStatus == common.NResultStatusAcceptancePending() or resultStatus == common.NResultStatusAvailabilityPending() ) then
+        ShowVerdictPending(panel)
+        unintialzie = false
+    elseif ( resultStatus == common.NResultStatusBothAccepted()) then
+        ShowResultStatusBothAccepted(panel)
+        unintialzie = false
+    elseif ( resultStatus == common.NResultStatusIWillPlayLater()) then
+        common.InvokeEvent(common.ELocalPlayerLeftSeat())
+        ShowHome()
+    else
+        if(resultStatus == common.NResultStatusCancelled()) then ShowResultStatusPartnerLeft(panel)
+        elseif(resultStatus == common.NResultStatusRejected()) then ShowResultStatusRejected(panel)
+        elseif(resultStatus == common.NResultStatusUnrequited()) then ShowResultStatusUnrequited(panel)
+        elseif(resultStatus == common.NResultStatusPartnerWillPlayLater()) then ShowResultStatusPartnerWillPlayLater(panel)
         end
-    end,false)
+        if (resultStatus == common.NResultStatusRejected()) then
+            common.InvokeEvent(common.ELocalPlayerLeftSeat())
+        end
+        if(resultStatus ~= common.NResultStatusPlayAgain()) then
+            Timer.new(common.TSeatAvailabilityCooldown(), function()
+                if(resultStatus == common.NResultStatusCancelled() or resultStatus == common.NResultStatusPartnerWillPlayLater() 
+                    or resultStatus == common.NResultStatusUnrequited()  ) then
+                    ShowSittingAlone()
+                else
+                    ShowHome()
+                end
+            end,false)
+        end
+    end
+    if(unintialzie) then UninitializeDialogueGame() end
 end
 
 function ShowSittingAlone()
@@ -75,22 +138,64 @@ function ShowSittingAlone()
 end
 
 function ShowDialgoueGame()
+    progress = 0
     root:Clear()
     local mainPanel = VisualElement.new()
     SetRelativeSize(mainPanel, 100, 100)
+    -- Game Panel
     gamePanel = VisualElement.new()
-    SetRelativeSize(gamePanel, 100, 50)
+    SetRelativeSize(gamePanel, 100, 45)
     gamePanel.style.backgroundColor = StyleColor.new(Colors.white)
     gamePanel:Add(CreateLabel("Game View",FontSize.heading,Colors.black))
-
+    -- Chat Panel
     chatPanel = UIScrollView.new()
-    SetRelativeSize(chatPanel, 100, 50)
+    SetRelativeSize(chatPanel, 100, 45)
     chatPanel.contentContainer:AddToClassList("ScrollViewContent")
     chatPanel.style.backgroundColor = StyleColor.new(Colors.grey)
-
+    -- Footer
+    local footerPanel = VisualElement.new()
+    SetRelativeSize(footerPanel, 100, 10)
+    progressBar = CreateDateProgressBar()
+    SetBackgroundColor(footerPanel, Colors.darkGrey)
+    footerPanel:Add(progressBar)
+    -- Construct
     mainPanel:Add(gamePanel)
     mainPanel:Add(chatPanel)
+    mainPanel:Add(footerPanel)
     root:Add(mainPanel)
+end
+
+function IncrementProgress()
+    progress += 1
+    progressBar.value = progress / common.CRequiredProgress()
+    if(progressBar.value >= 1) then
+        ShowAcceptOrReject()
+    end
+end
+
+function CreateDateProgressBar()
+    local bar = UIProgressBar.new()
+    SetRelativeSize(bar, 80, 100)
+    bar.value = 0
+    return bar
+end
+
+function ShowAcceptOrReject()
+    root:Clear()
+    local panel = VisualElement.new()
+    SetBackgroundColor(panel, Colors.white)
+    SetRelativeSize(panel, 100, 100)
+    panel:Add(CreateLabel("Your speed date has finished",FontSize.heading,Colors.black))
+    panel:Add(CreateLabel("You can play again to increase your relationship score",FontSize.normal,Colors.black))
+    panel:Add(CreateButton("Accept Partner", function()
+        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictAccept())
+    end))
+    panel:Add(CreateLabel("OR",FontSize.heading,Colors.black))
+    panel:Add(CreateButton("Reject Partner", function()
+        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictReject())
+    end))
+    panel:Add(CreateLabel("You will not be able to play again with your partner until tomorrow",FontSize.normal,Colors.black))
+    root:Add(panel)
 end
 
 function ShowQuestionReceived(args)
@@ -106,9 +211,12 @@ function ShowQuestionSubmitted(args)
     gamePanel:Add(CreateLabel("Your partner is thinking of an answer please wait",FontSize.heading,Colors.black))
 end
 
-
 function ShowGameTurn(args)
-    if(gamePanel == nil) then ShowDialgoueGame() end
+    if(gamePanel == nil) then
+        ShowDialgoueGame() 
+    else
+        IncrementProgress()
+    end
     gamePanel:Clear()
     if(args[1])then
         gamePanel:Add(CreateLabel("It is your turn to ask a question",FontSize.heading,Colors.black))
@@ -220,4 +328,13 @@ end
 function SetSize(ve : VisualElement,w,h)
     if(w > -1) then ve.style.width = StyleLength.new(Length.new(w)) end
     if(h > -1) then ve.style.height = StyleLength.new(Length.new(h)) end
+end
+
+function RenderFullScreenPanel()
+    root:Clear()
+    local panel = VisualElement.new()
+    SetBackgroundColor(panel, Colors.white)
+    SetRelativeSize(panel, 100, 100)
+    root:Add(panel)
+    return panel
 end
