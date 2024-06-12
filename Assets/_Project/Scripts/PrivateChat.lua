@@ -28,10 +28,16 @@ function self:ClientAwake()
 end
 
 function HandleDevMode(message)
-    if(message == "sit") then
+    if(message == "s1") then
         common.InvokeEvent(common.ETryToOccupySeat(),1)
-    elseif(message == "question") then
-        common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),"This is a debug question",true)
+    elseif(message == "s2") then
+        common.InvokeEvent(common.ETryToOccupySeat(),2)
+    elseif(message == "q") then
+        common.InvokeEvent(common.EChooseCustomQuestion())
+    elseif(message == "pa") then
+        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayAgain())
+    elseif(message == "pl") then
+        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
     end
 end
 

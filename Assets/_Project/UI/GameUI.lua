@@ -40,6 +40,7 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EPlayerReceivedQuestionFromServer(),ShowQuestionReceived)
     common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),ShowQuestionSubmitted)
     common.SubscribeEvent(common.EUpdateResultStatus(),HandleResultStatusUpdated)
+    common.SubscribeEvent(common.EChooseCustomQuestion(),ShowAcceptingCustomQuestion)
     if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowHome() end
 end
 
@@ -92,22 +93,22 @@ end
 
 function HandleResultStatusUpdated(args)
     local resultStatus = args[1]
-    local panel = RenderFullScreenPanel()
+    gamePanel:Clear()
     local unintialzie = true
     if ( resultStatus == common.NResultStatusAcceptancePending() or resultStatus == common.NResultStatusAvailabilityPending() ) then
-        ShowVerdictPending(panel)
+        ShowVerdictPending(gamePanel)
         unintialzie = false
     elseif ( resultStatus == common.NResultStatusBothAccepted()) then
-        ShowResultStatusBothAccepted(panel)
+        ShowResultStatusBothAccepted(gamePanel)
         unintialzie = false
     elseif ( resultStatus == common.NResultStatusIWillPlayLater()) then
         common.InvokeEvent(common.ELocalPlayerLeftSeat())
         ShowHome()
     else
-        if(resultStatus == common.NResultStatusCancelled()) then ShowResultStatusPartnerLeft(panel)
-        elseif(resultStatus == common.NResultStatusRejected()) then ShowResultStatusRejected(panel)
-        elseif(resultStatus == common.NResultStatusUnrequited()) then ShowResultStatusUnrequited(panel)
-        elseif(resultStatus == common.NResultStatusPartnerWillPlayLater()) then ShowResultStatusPartnerWillPlayLater(panel)
+        if(resultStatus == common.NResultStatusCancelled()) then ShowResultStatusPartnerLeft(gamePanel)
+        elseif(resultStatus == common.NResultStatusRejected()) then ShowResultStatusRejected(gamePanel)
+        elseif(resultStatus == common.NResultStatusUnrequited()) then ShowResultStatusUnrequited(gamePanel)
+        elseif(resultStatus == common.NResultStatusPartnerWillPlayLater()) then ShowResultStatusPartnerWillPlayLater(gamePanel)
         end
         if (resultStatus == common.NResultStatusRejected()) then
             common.InvokeEvent(common.ELocalPlayerLeftSeat())
@@ -173,7 +174,8 @@ function IncrementProgress()
     progress += 1
     progressBar.value = progress / common.CRequiredProgress()
     if(progressBar.value >= 1) then
-        ShowAcceptOrReject()
+        ranking.CompletedDate(partner)
+        common.InvokeEvent(common.EUpdateResultStatus(),common.NResultStatusBothAccepted())
     end
 end
 
@@ -182,24 +184,6 @@ function CreateDateProgressBar()
     SetRelativeSize(bar, 80, 100)
     bar.value = 0
     return bar
-end
-
-function ShowAcceptOrReject()
-    root:Clear()
-    local panel = VisualElement.new()
-    SetBackgroundColor(panel, Colors.black)
-    SetRelativeSize(panel, 100, 100)
-    panel:Add(CreateLabel("Your speed date has finished",FontSize.heading,Colors.black))
-    panel:Add(CreateLabel("You can play again to increase your relationship score",FontSize.normal,Colors.black))
-    panel:Add(CreateButton("Accept Partner", function()
-        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictAccept())
-    end,Colors.blue))
-    panel:Add(CreateLabel("OR",FontSize.heading,Colors.black))
-    panel:Add(CreateButton("Reject Partner", function()
-        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictReject())
-    end,Colors.red))
-    panel:Add(CreateLabel("You will not be able to play again with your partner until tomorrow",FontSize.normal,Colors.black))
-    root:Add(panel)
 end
 
 function ShowQuestionReceived(args)
@@ -215,12 +199,20 @@ function ShowQuestionSubmitted(args)
     gamePanel:Add(CreateLabel("Waiting for answer...",FontSize.heading,Colors.white))
 end
 
+function ShowAcceptingCustomQuestion()
+    gamePanel:Clear()
+    gamePanel:Add(CreateLabel("Your turn to ask!",FontSize.heading,Colors.blue))
+    gamePanel:Add(CreateLabel("Send in a custom question now using the in-game chat",FontSize.normal,Colors.lightGrey))
+    waitingForCustomQuestion = true
+end
+
 function ShowGameTurn(args)
     if(gamePanel == nil) then
-        ShowDialgoueGame() 
+        ShowDialgoueGame()
     else
         IncrementProgress()
     end
+    if(progressBar.value >= 1) then return end
     gamePanel:Clear()
     if(args[1])then
         gamePanel:Add(CreateLabel("Your turn to ask!",FontSize.heading,Colors.blue))
@@ -233,10 +225,7 @@ function ShowGameTurn(args)
             end,Colors.grey))
         end
         scrollView:Add(CreateButton("Custom Question", function()
-            gamePanel:Clear()
-            gamePanel:Add(CreateLabel("Your turn to ask!",FontSize.heading,Colors.blue))
-            gamePanel:Add(CreateLabel("Send in a custom question now using the in-game chat",FontSize.normal,Colors.lightGrey))
-            waitingForCustomQuestion = true
+            common.InvokeEvent(common.EChooseCustomQuestion())
         end,Colors.grey))
     else
         gamePanel:Add(CreateLabel("Waiting For Question...",FontSize.heading,Colors.white))

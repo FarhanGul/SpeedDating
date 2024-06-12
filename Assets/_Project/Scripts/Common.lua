@@ -74,6 +74,7 @@ function EUpdateResultStatus() return "UpdateResultStatus" end -- resultStatus(E
 function EUpdateSeatOccupant() return "UpdateSeatOccupant" end -- seats(Seats)
 function ETryToOccupySeat() return "TryToOccupySeat" end -- id(integer)
 function ESubmitVerdict() return "SubmitVerdict" end -- verdict(Enum Verdict)
+function EChooseCustomQuestion() return "ChooseCustomQuestion" end
 
 -- Enumerations
 -- Result Status

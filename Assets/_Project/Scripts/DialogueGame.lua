@@ -50,7 +50,7 @@ function self:ClientAwake()
 end
 
 function BeginGame(args)
-    SetVerdictType(common.NVerdictTypeAcceptance())
+    SetVerdictType(common.NVerdictTypeAvailability())
     partner = args[2]
     isMyTurnToQuestion = args[3]
     Timer.new(2.5,function() 
@@ -70,24 +70,7 @@ function ChangeTurn()
 end
 
 function HandleVerdict()
-    -- print(client.localPlayer.name.."@ Handle Verdict - Type ("..verdictType..") - Mine ( "..(myVerdict == nil and "Nothing" or myVerdict).." ) - Partner ("..(partnerVerdict == nil and "Nothing" or partnerVerdict).." )")
-    if(verdictType == common.NVerdictTypeAcceptance())then
-        if(myVerdict == nil or partnerVerdict == nil) then
-            if(partnerVerdict == nil) then
-                common.InvokeEvent(common.EUpdateResultStatus(),common.NResultStatusAcceptancePending())
-            end
-        else
-            if(myVerdict == common.NVerdictAccept() and partnerVerdict == common.NVerdictAccept()) then
-                ranking.CompletedDate(partner)
-                common.InvokeEvent(common.EUpdateResultStatus(),common.NResultStatusBothAccepted())
-            elseif(partnerVerdict == common.NVerdictReject()) then
-                EndGame(common.NResultStatusRejected())
-            elseif(myVerdict == common.NVerdictReject() and partnerVerdict == common.NVerdictAccept()) then
-                EndGame(common.NResultStatusUnrequited())
-            end
-            SetVerdictType(common.NVerdictTypeAvailability())
-        end
-    elseif(verdictType == common.NVerdictTypeAvailability()) then
+    if(verdictType == common.NVerdictTypeAvailability()) then
         if(myVerdict == common.NVerdictPlayAgain() and partnerVerdict == nil) then
             common.InvokeEvent(common.EUpdateResultStatus(),common.NResultStatusAvailabilityPending())
         elseif(myVerdict == common.NVerdictPlayAgain() and partnerVerdict == common.NVerdictPlayAgain()) then
