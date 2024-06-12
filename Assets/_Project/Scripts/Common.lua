@@ -105,7 +105,7 @@ function TSeatAvailabilityCooldown() return 4 end
 
 -- Constants
 
-function CRequiredProgress() return CEnableQuickGame() and 1 or 8 end
+function CRequiredProgress() return CEnableQuickGame() and 2 or 8 end
 function CVisibleTopRanks() return 6 end
 function CRelationshipIdDelimiter() return "," end 
 
@@ -113,7 +113,7 @@ function CRelationshipIdDelimiter() return "," end
 function CUseProductionStorage() return false end
 function CEnableDevCommands() return true end
 function CEnableUIDebugging() return false end
-function CEnableQuickGame() return false end
+function CEnableQuickGame() return true end
 
 -- Storage Keys
 function KDatingLeaderboard() return CUseProductionStorage() and "DatingLeaderboard" or "_DatingLeaderboard" end

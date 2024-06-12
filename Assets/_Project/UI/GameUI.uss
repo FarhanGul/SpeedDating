@@ -6,8 +6,6 @@
 *{
     white-space: normal;
     align-items: center;
-    margin-top: 1%;
-    margin-bottom: 1%;
     -unity-text-align: middle-center;
 }
 
@@ -17,26 +15,21 @@
     width: 100%;
 }
 
-.ChatMessage{
+.StartingLabel{
     width: 100%;
 }
 
-.StartingLabel{
-    width: 100%;
+.LeftTextAlign{
+    -unity-text-align: middle-left;
 }
 
 .HorizontalLayout{
     width: 100%;
     flex-direction: row;
-    justify-content: space-between;
 }
 
 .VerticalLayout{
     height: 100%;
     flex-direction: column;
     justify-content: space-between;
-}
-
-.FlexStart{
-    justify-content:flex-start;
 }
