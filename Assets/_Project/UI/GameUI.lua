@@ -224,12 +224,15 @@ function ShowGameTurn(args)
     gamePanel:Clear()
     if(args[1])then
         gamePanel:Add(CreateLabel("It is your turn to ask a question",FontSize.heading,Colors.black))
+        local scrollView = UIScrollView.new()
+        gamePanel:Add(scrollView)
+        scrollView:AddToClassList("ScrollViewContent")
         for i = 1, #args[2] do
-            gamePanel:Add(CreateButton(args[2][i], function()
+            scrollView:Add(CreateButton(args[2][i], function()
                 common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),args[2][i],true)
             end))
         end
-        gamePanel:Add(CreateButton("Custom Question", function()
+        scrollView:Add(CreateButton("Custom Question", function()
             gamePanel:Clear()
             gamePanel:Add(CreateLabel("It is your turn to ask a question",FontSize.heading,Colors.black))
             gamePanel:Add(CreateLabel("Send in a custom question now using the in-game chat",FontSize.normal,Colors.black))
