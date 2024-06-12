@@ -544,7 +544,6 @@ MonoBehaviour:
   _uiOutput: 0
   _uiOutputSettings:
     rid: -2
-  m_enableDevMode: 1
   references:
     version: 2
     RefIds:
@@ -1745,6 +1744,7 @@ MonoBehaviour:
   _uiOutput: 0
   _uiOutputSettings:
     rid: -2
+  m_isProductionBuild: 0
   references:
     version: 2
     RefIds:
@@ -1759,17 +1759,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1972748449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9970504f85eb9121812710059baa1caf, type: 3}
+  m_Script: {fileID: 11500000, guid: 6953b3f8dc11c33181b1e6b1fd22ffa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _networkId: 0
-  _script: {fileID: -974389366465450183, guid: 23af509a3f3491f43bf810d021751c7a, type: 3}
+  _script: {fileID: -974389366465450183, guid: d38cb32d66cec3e43b6ee66447fdff73, type: 3}
   _properties: []
   _uiOutput: 0
   _uiOutputSettings:
     rid: -2
-  m_gameUIGameObject: {fileID: 1878176051}
-  m_seatManagerGameObject: {fileID: 1820437508}
   references:
     version: 2
     RefIds:

@@ -1,10 +1,6 @@
 --!Type(Client)
 local common = require("Common")
 
---!SerializeField
-local enableDevMode : boolean = false
-
-
 -- Private
 local chatHistory
 local partner
@@ -14,7 +10,7 @@ function self:ClientAwake()
         StartPrivateChat(args[2])
     end)
     Chat.TextMessageReceivedHandler:Connect(function(channel,_from,_message)
-        if( enableDevMode and string.sub(_message,1,1) == "@") then
+        if( not common.IsProductionBuild() and string.sub(_message,1,1) == "@") then
             if(_from == client.localPlayer) then
                 HandleDevMode(string.sub(_message,2,-1))
             end

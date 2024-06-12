@@ -1,6 +1,15 @@
 --!Type(Module)
 local events = {}
 
+--!SerializeField
+local isProductionBuild : boolean = false
+
+-- Functions
+function self:ClientAwake()
+    if(isProductionBuild) then print("PRODUCTION BUILD")
+    else print("DEVELOPMENT BUILD") end
+end
+
 -- Function accepts list of alternative wait and functions
 function Coroutine(...)
     local args = {...}
@@ -52,6 +61,10 @@ function GetRandomExcluding(from, to, exclude)
     return rand
 end
 
+function IsProductionBuild()
+    return isProductionBuild
+end
+
 -- Events
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
@@ -92,3 +105,8 @@ function TSeatAvailabilityCooldown() return 4 end
 
 -- Constants
 function CRequiredProgress() return 4 end
+
+-- Storage Keys
+function KDatingLeaderboard() return  isProductionBuild and "DatingLeaderboard" or "_DatingLeaderboard" end
+function KRelationshipLeaderboard() return  isProductionBuild and "RelationshipLeaderboard" or "_RelationshipLeaderboard" end
+function KPartnerHistory() return  isProductionBuild and "PartnerHistory" or "_PartnerHistory" end

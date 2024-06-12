@@ -16,14 +16,13 @@ using Highrise.Client;
 
 namespace Highrise.Lua.Generated
 {
-    [AddComponentMenu("Lua/Common")]
+    [AddComponentMenu("Lua/Ranking")]
     [LuaBehaviourScript(s_scriptGUID)]
-    public class Common : LuaBehaviourThunk
+    public class Ranking : LuaBehaviourThunk
     {
-        private const string s_scriptGUID = "d7589f8c4260bce45a831be0d4d72f6d";
+        private const string s_scriptGUID = "d38cb32d66cec3e43b6ee66447fdff73";
         public override string ScriptGUID => s_scriptGUID;
 
-        [SerializeField] public System.Boolean m_isProductionBuild = false;
 
         protected override SerializedPropertyValue[] SerializeProperties()
         {
@@ -32,7 +31,6 @@ namespace Highrise.Lua.Generated
 
             return new SerializedPropertyValue[]
             {
-                CreateSerializedProperty(_script.GetPropertyAt(0), m_isProductionBuild),
             };
         }
     }
