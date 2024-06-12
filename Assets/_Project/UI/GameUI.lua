@@ -220,13 +220,17 @@ function ShowGameTurn(args)
         gamePanel:Add(scrollView)
         scrollView:AddToClassList("ScrollViewContent")
         for i = 1, #args[2] do
-            scrollView:Add(CreateButton(args[2][i], function()
+            local button = CreateButton(args[2][i], function()
                 common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),args[2][i],true)
-            end,Colors.grey))
+            end,Colors.grey)
+            button:AddToClassList("QuestionButton")
+            scrollView:Add(button)
         end
-        scrollView:Add(CreateButton("Custom Question", function()
+        local button = CreateButton("Custom Question", function()
             common.InvokeEvent(common.EChooseCustomQuestion())
-        end,Colors.grey))
+        end,Colors.grey)
+        button:AddToClassList("QuestionButton")
+        scrollView:Add(button)
     else
         gamePanel:Add(CreateLabel("Waiting For Question...",FontSize.heading,Colors.white))
     end
@@ -252,12 +256,10 @@ end
 
 function CreateChatMessage(player,message)
     local panel = VisualElement.new()
+    local accentColor = player == client.localPlayer and "#0DA6FC" or "#CCCADC"
     panel:AddToClassList("HorizontalLayout")
-    -- panel.style.backgroundColor = player == client.localPlayer and StyleColor.new(Colors.white) or StyleColor.new(Colors.black)
-    local label = CreateLabel(player.name..": ",FontSize.normal,player == client.localPlayer and StyleColor.new(Colors.blue) or StyleColor.new(Colors.white))
-    label:AddToClassList("LeftTextAlign")
-    panel:Add(label)
-    label = CreateLabel(message,FontSize.normal,Colors.lightGrey)
+    local richText = "<color="..accentColor..">"..player.name..": <color=#7D7C88>"..message.."</color>"
+    local label = CreateLabel(richText,FontSize.normal,Colors.white)
     label:AddToClassList("LeftTextAlign")
     panel:Add(label)
     SetMargin(panel, 0.02)
@@ -394,7 +396,8 @@ end
 function CreateButton(text,onPressed,color)
     local button = UIButton.new()
     SetBackgroundColor(button, color)
-    button:Add(CreateLabel(text,FontSize.normal,Colors.white)) 
+    local label = CreateLabel(text,FontSize.normal,Colors.white)
+    button:Add(label) 
     button:RegisterPressCallback(onPressed)
     return button
 end

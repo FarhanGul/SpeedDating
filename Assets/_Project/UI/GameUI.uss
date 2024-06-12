@@ -19,6 +19,12 @@
     width: 100%;
 }
 
+.QuestionButton{
+    height: 25%;
+    width: 98%;
+    margin: 1%;
+}
+
 .LeftTextAlign{
     -unity-text-align: middle-left;
 }
