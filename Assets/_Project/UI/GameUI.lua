@@ -18,6 +18,7 @@ local Colors = {
     darkGrey = Color.new(45/255, 45/255, 45/255),
     lightGrey = Color.new(74/255,74/255,74/255),
     white = Color.white,
+    yellow =  Color.new(255/255,211/255,115/255),
     black = Color.black,
     red = Color.new(1, 115/255, 141/255),
     blue = Color.new(115/255, 185/255, 1),
@@ -52,11 +53,11 @@ function ShowResultStatusBothAccepted(panel)
     panel:Add(CreateLabel("Keep dating to improve your relationship score",FontSize.normal,Colors.black))
     panel:Add(CreateButton("Date again", function()
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayAgain())
-    end))
+    end,Colors.blue))
     panel:Add(CreateLabel("OR",FontSize.heading,Colors.black))
     panel:Add(CreateButton("Catch you later", function()
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
-    end))
+    end,Colors.red))
     panel:Add(CreateLabel("Speed date with different partners to improve your dating score",FontSize.normal,Colors.black))
 end
 
@@ -134,7 +135,7 @@ function ShowSittingAlone()
     panel:Add(CreateButton("Leave", function()
         ShowHome()
         common.InvokeEvent(common.ELocalPlayerLeftSeat())
-    end))
+    end,Colors.red))
     root:Add(panel)
 end
 
@@ -193,11 +194,11 @@ function ShowAcceptOrReject()
     panel:Add(CreateLabel("You can play again to increase your relationship score",FontSize.normal,Colors.black))
     panel:Add(CreateButton("Accept Partner", function()
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictAccept())
-    end))
+    end,Colors.blue))
     panel:Add(CreateLabel("OR",FontSize.heading,Colors.black))
     panel:Add(CreateButton("Reject Partner", function()
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictReject())
-    end))
+    end,Colors.red))
     panel:Add(CreateLabel("You will not be able to play again with your partner until tomorrow",FontSize.normal,Colors.black))
     root:Add(panel)
 end
@@ -230,14 +231,14 @@ function ShowGameTurn(args)
         for i = 1, #args[2] do
             scrollView:Add(CreateButton(args[2][i], function()
                 common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),args[2][i],true)
-            end))
+            end,Colors.blue))
         end
         scrollView:Add(CreateButton("Custom Question", function()
             gamePanel:Clear()
             gamePanel:Add(CreateLabel("It is your turn to ask a question",FontSize.heading,Colors.black))
             gamePanel:Add(CreateLabel("Send in a custom question now using the in-game chat",FontSize.normal,Colors.black))
             waitingForCustomQuestion = true
-        end))
+        end,Colors.yellow))
     else
         gamePanel:Add(CreateLabel("It is your partner's turn to ask a question, please wait",FontSize.heading,Colors.black))
     end
@@ -286,7 +287,7 @@ function ShowDebugUI()
     local button = CreateButton("Send Chat",function()
         chatPanel:Add(CreateChatMessage(client.localPlayer,math.random(1,100000000)))
         chatPanel:AdjustScrollOffsetForNewContent()
-    end)
+    end,Colors.blue)
     SetRelativeSize(button, 100, 10)
     root:Add(emptyPanel)
     root:Add(chatPanel)
@@ -298,7 +299,7 @@ function ShowHome()
     local panel = VisualElement.new()
     panel:Add(CreateLabel("Welcome to speed dating!",FontSize.heading))
     panel:Add(CreateLabel("Sit at a table to begin your date",FontSize.normal))
-    panel:Add(CreateButton("Ranking",ShowRanking ))
+    panel:Add(CreateButton("Ranking",ShowRanking ,Colors.blue))
     root:Add(panel)
 end
 
@@ -308,14 +309,14 @@ function ShowRanking()
     ranking.FetchDatingLeaderboard(function() 
         local panel = RenderFullScreenPanel()
         panel:Add(CreateLabel("Ranking",FontSize.heading))
-        panel:Add(CreateButton("Dating", function() ShowRankingData(common.NRankingTypeDatingScore()) end))
-        panel:Add(CreateButton("Relationship", function() ShowRankingData(common.NRankingTypeRelationshipScore()) end))
+        panel:Add(CreateButton("Dating", function() ShowRankingData(common.NRankingTypeDatingScore()) end,Colors.blue))
+        panel:Add(CreateButton("Relationship", function() ShowRankingData(common.NRankingTypeRelationshipScore()) end,Colors.blue))
         leaderboardPanel = VisualElement.new()
         panel:Add(leaderboardPanel)
         panel:Add(CreateButton("Close", function()
             leaderboardPanel = nil
             ShowHome()
-        end))
+        end,Colors.red))
         ShowRankingData(common.NRankingTypeDatingScore())
     end)
 end
@@ -366,9 +367,9 @@ function CreateLabel(...)
     return label
 end
 
-function CreateButton(text,onPressed)
+function CreateButton(text,onPressed,color)
     local button = UIButton.new()
-    SetBackgroundColor(button, Colors.blue)
+    SetBackgroundColor(button, color)
     button:Add(CreateLabel(text,FontSize.normal,Colors.white)) 
     button:RegisterPressCallback(onPressed)
     return button
