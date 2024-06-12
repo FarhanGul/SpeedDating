@@ -18,6 +18,7 @@ local Colors = {
     darkGrey = Color.new(45/255, 45/255, 45/255),
     lightGrey = Color.new(74/255,74/255,74/255),
     white = Color.white,
+    offWhite = Color.new(210/255,210/255,210/255),
     yellow =  Color.new(255/255,211/255,115/255),
     black = Color.black,
     red = Color.new(1, 115/255, 141/255),
@@ -297,8 +298,8 @@ end
 function ShowHome()
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(CreateLabel("Welcome to speed dating!",FontSize.heading))
-    panel:Add(CreateLabel("Sit at a table to begin your date",FontSize.normal))
+    panel:Add(CreateLabel("Welcome to speed dating!",FontSize.heading,Colors.white))
+    panel:Add(CreateLabel("Sit at a table to begin your date",FontSize.normal,Colors.offWhite))
     panel:Add(CreateButton("Ranking",ShowRanking ,Colors.blue))
     root:Add(panel)
 end
