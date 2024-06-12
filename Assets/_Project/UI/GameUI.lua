@@ -5,6 +5,7 @@ local ranking = require("Ranking")
 
 --!Bind
 local root : VisualElement = nil
+local waitingForCustomQuestion = false
 
 -- Configuration
 local FontSize = {
@@ -86,6 +87,7 @@ function UninitializeDialogueGame()
     gamePanel = nil
     chatPanel = nil
     progressBar = nil
+    waitingForCustomQuestion = false
 end
 
 function HandleResultStatusUpdated(args)
@@ -201,7 +203,7 @@ function ShowAcceptOrReject()
 end
 
 function ShowQuestionReceived(args)
-    HandlePrivateMessage({partner,args[1]})
+    if(args[2]) then HandlePrivateMessage({partner,args[1]}) end
     gamePanel:Clear()
     gamePanel:Add(CreateLabel("It is your turn to answer",FontSize.heading,Colors.black))
     gamePanel:Add(CreateLabel(args[1],FontSize.normal,Colors.lightGrey))
@@ -224,9 +226,15 @@ function ShowGameTurn(args)
         gamePanel:Add(CreateLabel("It is your turn to ask a question",FontSize.heading,Colors.black))
         for i = 1, #args[2] do
             gamePanel:Add(CreateButton(args[2][i], function()
-                common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),args[2][i])
+                common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),args[2][i],true)
             end))
         end
+        gamePanel:Add(CreateButton("Custom Question", function()
+            gamePanel:Clear()
+            gamePanel:Add(CreateLabel("It is your turn to ask a question",FontSize.heading,Colors.black))
+            gamePanel:Add(CreateLabel("Send in a custom question now using the in-game chat",FontSize.normal,Colors.black))
+            waitingForCustomQuestion = true
+        end))
     else
         gamePanel:Add(CreateLabel("It is your partner's turn to ask a question, please wait",FontSize.heading,Colors.black))
     end
@@ -244,6 +252,11 @@ end
 
 function HandlePrivateMessage(args)
     if(chatPanel ~= nil) then
+        if(waitingForCustomQuestion and args[1] == client.localPlayer) then
+            waitingForCustomQuestion = false
+            common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),args[2],false)
+            return
+        end
         chatPanel:Add(CreateChatMessage(args[1], args[2]))
         chatPanel:AdjustScrollOffsetForNewContent()
     end

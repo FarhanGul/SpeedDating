@@ -31,7 +31,7 @@ function HandleDevMode(message)
     if(message == "sit") then
         common.InvokeEvent(common.ETryToOccupySeat(),1)
     elseif(message == "question") then
-        common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),"This is a debug question")
+        common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),"This is a debug question",true)
     end
 end
 

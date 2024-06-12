@@ -19,8 +19,8 @@ local e_sendVerdictToServer = Event.new("sendVerdictToServer")
 local e_sendVerdictToClient = Event.new("sendVerdictToClient")
 
 function self:ServerAwake()
-    e_sendPlayerQuestionToServer:Connect(function(player,partner,question)
-        e_sendPlayerQuestionToClient:FireClient(partner,question)
+    e_sendPlayerQuestionToServer:Connect(function(player,partner,question,sendOnChat)
+        e_sendPlayerQuestionToClient:FireClient(partner,question,sendOnChat)
     end)
     e_sendTurnChangedToServer:Connect(function(player,partner)
         e_sendTurnChangedToClient:FireClient(partner)
@@ -36,9 +36,9 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EBeginDate(),BeginGame)
     common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),HandlePlayerSelectedQuestion)
     common.SubscribeEvent(common.EPrivateMessageSent(),HandlePrivateMessageSent)
-    e_sendPlayerQuestionToClient:Connect(function(question)
+    e_sendPlayerQuestionToClient:Connect(function(question,sendOnChat)
         waitingForAnswer = true
-        common.InvokeEvent(common.EPlayerReceivedQuestionFromServer(),question)
+        common.InvokeEvent(common.EPlayerReceivedQuestionFromServer(),question,sendOnChat)
     end)
     e_sendTurnChangedToClient:Connect(function()
         ChangeTurn()
@@ -119,7 +119,7 @@ function HandlePlayerSubmittedVerdict(args)
 end
 
 function HandlePlayerSelectedQuestion(args)
-    e_sendPlayerQuestionToServer:FireServer(partner,args[1])
+    e_sendPlayerQuestionToServer:FireServer(partner,args[1],args[2])
 end
 
 function HandlePrivateMessageSent(args)
