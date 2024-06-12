@@ -1,6 +1,8 @@
 --!Type(ClientAndServer)
 
 local common = require("Common")
+local ranking = require("Ranking")
+
 local partner
 local isMyTurnToQuestion
 local waitingForAnswer = false
@@ -76,6 +78,7 @@ function HandleVerdict()
             end
         else
             if(myVerdict == common.NVerdictAccept() and partnerVerdict == common.NVerdictAccept()) then
+                ranking.CompletedDate(partner)
                 common.InvokeEvent(common.EUpdateResultStatus(),common.NResultStatusBothAccepted())
             elseif(partnerVerdict == common.NVerdictReject()) then
                 EndGame(common.NResultStatusRejected())

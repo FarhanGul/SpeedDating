@@ -17,6 +17,12 @@
     width: 100%;
 }
 
+.HorizontalLayout{
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 *{
     white-space: normal;
     align-items: center;

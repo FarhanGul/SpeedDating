@@ -7,15 +7,12 @@ local e_getRelationshipLeaderboardFromServer = Event.new("getRelationshipLeaderb
 local e_sendRelationshipLeaderboardToClient = Event.new("sendRelationshipLeaderboardToClient")
 local e_getDatingLeaderboardFromServer = Event.new("getDatingLeaderboardFromServer") 
 local e_sendDatingLeaderboardToClient = Event.new("sendDatingLeaderboardToClient")
-local e_getPartnerHistoryFromServer = Event.new("getPartnerHistoryFromServer") 
-local e_sendPartnerHistoryToClient = Event.new("sendPartnerHistoryToClient")
-local e_sendIncrementDatingScoreToServer = Event.new("sendIncrementDatingScoreToServer")
-local e_sendIncrementRelationshipScoreToServer = Event.new("sendIncrementRelationshipScoreToServer")
+local e_sendDateCompleteToServer = Event.new("sendDateCompleteToServer")
+local e_sendDeleteStorageToServer = Event.new("sendDeleteStorageToServer")
 
 -- Private
 local datingLeaderboard = {}
 local relationshipLeaderboard = {}
-local partnerHistory = {}
 local responseCallback
 
 function self:ClientAwake()
@@ -27,89 +24,98 @@ function self:ClientAwake()
         relationshipLeaderboard = newLeaderboard
         responseCallback()
     end)
-    e_sendPartnerHistoryToClient:Connect(function(newPartnerHistory)
-        partnerHistory = newPartnerHistory
-    end)
-    e_getPartnerHistoryFromServer:FireServer()
 end
 
 function self:ServerAwake()
     e_getDatingLeaderboardFromServer:Connect(function(player)
-        FetchDatingLeaderboardFromStorage()
-        e_sendDatingLeaderboardToClient:FireClient(player,datingLeaderboard)
+        FetchDatingLeaderboardFromStorage(function()
+            e_sendDatingLeaderboardToClient:FireClient(player,GetFormattedLeaderboard(player,datingLeaderboard,false))
+        end)
     end)
     e_getRelationshipLeaderboardFromServer:Connect(function(player)
-        FetchRelationshipLeaderboardFromStorage()
-        e_sendRelationshipLeaderboardToClient:FireClient(player,relationshipLeaderboard)
+        FetchRelationshipLeaderboardFromStorage(function()
+            e_sendRelationshipLeaderboardToClient:FireClient(player,GetFormattedLeaderboard(player,relationshipLeaderboard,true))
+        end)
     end)
-    e_getPartnerHistoryFromServer:Connect(function(player)
-        e_sendPartnerHistoryToClient:FireClient(player,FetchPartnerHistoryFromStorage(player))
+    e_sendDateCompleteToServer:Connect(function(sender,player,partner)
+        print("SendDateCompleteToServer : "..player.name.. " & "..partner.name)
+        local pairId = GetUniquePairIdentifier(player.name,partner.name)
+        -- Fetch Partner History
+        FetchPartnerHistoryFromStorage(function(partnerHistory)
+            if(not table.find(partnerHistory,pairId)) then
+                -- Players playing each for the first time
+                table.insert(partnerHistory,pairId)
+                Storage.SetValue(common.KPartnerHistory(),partnerHistory)
+                IncrementDatingScore(player, partner)
+            else
+                IncrementRelationshipScore(pairId)
+            end
+        end)
     end)
-    e_sendIncrementDatingScoreToServer:Connect(function(player,partner)
-        FetchDatingLeaderboardFromStorage()
-        local found = false
+    e_sendDeleteStorageToServer:Connect(function(player)
+        Storage.DeleteValue(common.KDatingLeaderboard())
+        Storage.DeleteValue(common.KRelationshipLeaderboard())
+        Storage.DeleteValue(common.KPartnerHistory())
+        print("Deleted Storage")
+    end)
+end
+
+function IncrementDatingScore(player,partner)
+    FetchDatingLeaderboardFromStorage(function()
         for k,v in pairs(datingLeaderboard) do
-            if(k == player.name)then
-                v += 1
-                found = true
+            if(k == player.name or k == partner.name)then
+                datingLeaderboard[k] += 1
             end
         end
-        if ( not found ) then
-            datingLeaderboard[player.name] = 1
-        end
-        local history = FetchPartnerHistoryFromStorage(player)
-        table.insert(history,partner.name)
+        if(datingLeaderboard[player.name] == nil) then datingLeaderboard[player.name] = 1 end
+        if(datingLeaderboard[partner.name] == nil) then datingLeaderboard[partner.name] = 1 end
         Storage.SetValue(common.KDatingLeaderboard(),datingLeaderboard)
-        Storage.SetPlayerValue(common.KPartnerHistory(),history)
     end)
-    e_sendIncrementRelationshipScoreToServer:Connect(function(player,partner)
-        FetchRelationshipLeaderboardFromStorage()
-        local relationshipId = GetUniquePairIdentifier(player.name, partner.name)
+end
+
+function IncrementRelationshipScore(pairId)
+    FetchRelationshipLeaderboardFromStorage(function()
         for k,v in pairs(relationshipLeaderboard) do
-            if(k == relationshipId)then
-                v += 1
-                found = true
+            if(k == pairId)then
+                relationshipLeaderboard[k] += 1
             end
         end
-        if ( not found ) then
-            relationshipLeaderboard[relationshipId] = 1
-        end
+        if(relationshipLeaderboard[pairId] == nil ) then relationshipLeaderboard[pairId] = 1 end
         Storage.SetValue(common.KRelationshipLeaderboard(),relationshipLeaderboard)
     end)
 end
 
-function FetchPartnerHistoryFromStorage(player)
+function FetchPartnerHistoryFromStorage(responseCallback)
     local history
-    Storage.GetPlayerValue(player,common.KPartnerHistory(), function(storedValue)
+    Storage.GetValue(common.KPartnerHistory(), function(storedValue,errorCode)
         if storedValue == nil then storedValue = {} end
         history = storedValue
+        responseCallback(history)
     end)
-    return history
 end
 
-function FetchDatingLeaderboardFromStorage()
+function FetchDatingLeaderboardFromStorage(responseCallback)
     Storage.GetValue(common.KDatingLeaderboard(), function(storedValue)
         if storedValue == nil then storedValue = {} end
         datingLeaderboard = storedValue
+        responseCallback()
     end)
-    table.sort(datingLeaderboard, function(a, b) return a > b end)
 end
 
-function FetchRelationshipLeaderboardFromStorage()
+function FetchRelationshipLeaderboardFromStorage(responseCallback)
     Storage.GetValue(common.KRelationshipLeaderboard(), function(storedValue)
         if storedValue == nil then storedValue = {} end
         relationshipLeaderboard = storedValue
+        responseCallback()
     end)
-    table.sort(relationshipLeaderboard, function(a, b) return a > b end)
 end
 
 
 function CompletedDate(partner)
-    if(not table.find(partnerHistory, partner.name)) then
-        table.insert(partnerHistory,partner.name)
-        e_sendIncrementDatingScoreToServer:FireServer(partner)
-    else
-        e_sendIncrementRelationshipScoreToServer:FireServer(partner)
+    local pairId = GetUniquePairIdentifier(client.localPlayer.name,partner.name)
+    local chosenPlayer = GetOriginalStrings(pairId)[1] 
+    if(client.localPlayer.name == chosenPlayer) then
+        e_sendDateCompleteToServer:FireServer(client.localPlayer,partner)
     end
 end
 
@@ -135,5 +141,56 @@ function GetUniquePairIdentifier(str1, str2)
     if str1 > str2 then
         str1, str2 = str2, str1
     end
-    return str1..str2
+    return str1 .. common.CRelationshipIdDelimiter() .. str2
+end
+
+function GetOriginalStrings(identifier)
+    local escapedDelimiter = common.CRelationshipIdDelimiter():gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
+    local str1,str2 = identifier:match("^(.-)" .. escapedDelimiter .. "(.-)$")
+    return {str1,str2}
+end
+
+function GetFormattedLeaderboard(player,fullLeaderboard,isKeyUniquePairId)
+    local kvPairs = {}
+    for k, v in pairs(fullLeaderboard) do
+        table.insert(kvPairs, {key = k, value = v})
+    end
+    table.sort(kvPairs, function(a, b) return a.value > b.value end)
+    local formatted = {}
+    currentCount = 0
+    local isPlayerFound = false
+    for _, pair in ipairs(kvPairs) do
+        local k = pair.key
+        local v = pair.value
+        if(isKeyUniquePairId) then
+            if(GetOriginalStrings(k)[1] == player.name or GetOriginalStrings(k)[2] == player.name)then isPlayerFound = true end
+        else
+            if(k == player.name) then isPlayerFound = true end
+        end
+        local _name = isKeyUniquePairId and ( GetOriginalStrings(k)[1].." & "..GetOriginalStrings(k)[2] ) or k
+        table.insert(formatted,{name=_name,score=v,rank=currentCount+1})
+        currentCount += 1
+        if(currentCount == common.CVisibleTopRanks()) then break end
+    end
+    if( not isPlayerFound )then
+        currentCount = 0
+        for _, pair in ipairs(kvPairs) do
+            local k = pair.key
+            local v = pair.value
+            local condition = isKeyUniquePairId and (GetOriginalStrings(k)[1] == player.name or GetOriginalStrings(k)[2] == player.name) or (k == player.name)
+            if(condition) then
+                local _name = isKeyUniquePairId and ( GetOriginalStrings(k)[1].." & "..GetOriginalStrings(k)[2] ) or k
+                table.insert(formatted,{name=_name,score=v,rank=currentCount+1})
+                break
+            end 
+            currentCount+=1
+        end
+    end
+    return formatted
+end
+
+function DeleteStorage()
+    if(not common.IsProductionBuild()) then
+        e_sendDeleteStorageToServer:FireServer()
+    end
 end

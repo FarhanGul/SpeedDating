@@ -1,6 +1,7 @@
 --!Type(UI)
 
 local common = require("Common")
+local ranking = require("Ranking")
 
 --!Bind
 local root : VisualElement = nil
@@ -28,6 +29,7 @@ local isDebuggingEnabled : boolean = false
 local chatPanel : UIScrollView
 local gamePanel : VisualElement
 local progressBar : UIProgressBar
+local leaderboardPanel : VisualElement
 local partner
 local progress
 
@@ -289,13 +291,54 @@ end
 
 function ShowRanking()
     root:Clear()
-    local panel = VisualElement.new()
-    panel:Add(CreateLabel("Ranking",FontSize.heading))
-    panel:Add(CreateButton("Close", function()
-        root:Clear()
-        ShowHome()
-    end))
-    root:Add(panel)
+    ranking.FetchRelationshipLeaderboard(function()end)
+    ranking.FetchDatingLeaderboard(function() 
+        local panel = RenderFullScreenPanel()
+        panel:Add(CreateLabel("Ranking",FontSize.heading))
+        panel:Add(CreateButton("Dating", function() ShowRankingData(common.NRankingTypeDatingScore()) end))
+        panel:Add(CreateButton("Relationship", function() ShowRankingData(common.NRankingTypeRelationshipScore()) end))
+        leaderboardPanel = VisualElement.new()
+        panel:Add(leaderboardPanel)
+        panel:Add(CreateButton("Close", function()
+            leaderboardPanel = nil
+            ShowHome()
+        end))
+        ShowRankingData(common.NRankingTypeDatingScore())
+    end)
+end
+
+function ShowRankingData(rankingType)
+    leaderboardPanel:Clear()
+    local ve = VisualElement.new()
+    ve:AddToClassList("HorizontalLayout")
+    local variableString = rankingType == common.NRankingTypeDatingScore() and "Name" or "Couple"
+    ve:Add(CreateLabel(variableString,FontSize.heading,Colors.black))
+    ve:Add(CreateLabel("Score",FontSize.heading,Colors.black))
+    leaderboardPanel:Add(ve)
+    local playerFound = false
+    local data = rankingType == common.NRankingTypeDatingScore() and ranking.DatingLeaderboard() or ranking.RelationshipLeaderboard()
+    if(#data == 0) then
+        leaderboardPanel:Add(CreateLabel("Looks like no one has scored yet. Start dating!",FontSize.normal,Color.black))
+    else
+        for i =1 , #data do
+            ve = VisualElement.new()
+            ve:AddToClassList("HorizontalLayout")
+            ve:Add(CreateLabel(tostring(i),FontSize.normal,Color.black))
+            ve:Add(CreateLabel(data[i].name,FontSize.normal,Color.black))
+            ve:Add(CreateLabel(data[i].score,FontSize.normal,Color.black))
+            leaderboardPanel:Add(ve)
+        end
+    end
+    variableString = rankingType == common.NRankingTypeDatingScore() and
+    "You get 1 point for each successful date with a new partner" 
+    or 
+    "You get 1 point for each successful date with an existing partner"
+    leaderboardPanel:Add(CreateLabel(variableString,FontSize.normal,Colors.black))
+end
+
+function ShowRelationshipScore()
+    leaderboardPanel:Clear()
+    leaderboardPanel:Add(CreateLabel("You get 1 point for each successful date with an existing partner",FontSize.normal,Colors.black))
 end
 
 function CreateLabel(...)

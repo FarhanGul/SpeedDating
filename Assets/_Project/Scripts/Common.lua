@@ -90,12 +90,16 @@ function NResultStatusUnrequited() return "ResultStatusUnrequited" end
 function NResultStatusPlayAgain() return "ResultStatusPlayAgain" end
 function NResultStatusIWillPlayLater() return "ResultStatusIWillPlayLater" end
 function NResultStatusPartnerWillPlayLater() return "ResultStatusPartnerWillPlayLater" end
+-- RankingType
+function NRankingTypeDatingScore() return "RankingTypeDatingScore" end
+function NRankingTypeRelationshipScore() return "RankingTypeRelationshipScore" end
 
 -- Verdict
 function NVerdictAccept() return "VerdictAccept" end
 function NVerdictReject() return "VerdictReject" end
 function NVerdictPlayAgain() return "VerdictPlayAgain" end
 function NVerdictPlayLater() return "VerdictPlayLater" end
+
 -- Verdict Type
 function NVerdictTypeAcceptance() return "VerdictTypeAcceptance" end
 function NVerdictTypeAvailability() return "VerdictTypeAvailability" end
@@ -104,7 +108,9 @@ function NVerdictTypeAvailability() return "VerdictTypeAvailability" end
 function TSeatAvailabilityCooldown() return 4 end
 
 -- Constants
-function CRequiredProgress() return 4 end
+function CRequiredProgress() return 1 end
+function CVisibleTopRanks() return 8 end
+function CRelationshipIdDelimiter() return "," end
 
 -- Storage Keys
 function KDatingLeaderboard() return  isProductionBuild and "DatingLeaderboard" or "_DatingLeaderboard" end
