@@ -9,6 +9,7 @@ local waitingForCustomQuestion = false
 
 -- Configuration
 local FontSize = {
+    small = 0.03,
     normal = 0.05,
     heading = 0.07
 }
@@ -27,7 +28,6 @@ local Colors = {
 local chatPanel : UIScrollView
 local gamePanel : VisualElement
 local progressBar : UIProgressBar
-local leaderboardPanel : VisualElement
 local partner
 local progress
 
@@ -299,31 +299,38 @@ function ShowRanking()
     ranking.FetchRelationshipLeaderboard(function()end)
     ranking.FetchDatingLeaderboard(function() 
         local panel = RenderFullScreenPanel()
-        panel:Add(CreateLabel("Ranking",FontSize.heading,Colors.white))
-
+        local title = CreateLabel("Ranking",FontSize.heading,Colors.white)
+        local leaderboardPanel = VisualElement.new()
+        local guideLabel = CreateLabel("",FontSize.normal,Colors.lightGrey)
         local tabOptions = {{
             text = "Dating",
-            pressed = function() ShowRankingData(common.NRankingTypeDatingScore()) end
+            pressed = function() ShowRankingData(common.NRankingTypeDatingScore(),leaderboardPanel,guideLabel) end
         },{
             text = "Relationship",
-            pressed = function() ShowRankingData(common.NRankingTypeRelationshipScore()) end
+            pressed = function() ShowRankingData(common.NRankingTypeRelationshipScore(),leaderboardPanel,guideLabel) end
         }}
-        panel:Add(CreateTabs(tabOptions))
-
-        leaderboardPanel = VisualElement.new()
-        panel:Add(leaderboardPanel)
-        panel:Add(CreateButton("Close", function()
-            leaderboardPanel = nil
+        local tabs = CreateTabs(tabOptions)
+        local closeButton = CreateButton("Close", function()
             ShowHome()
-        end,Colors.red))
-        ShowRankingData(common.NRankingTypeDatingScore())
+        end,Colors.red)
+        panel:Add(title)
+        panel:Add(tabs)
+        panel:Add(leaderboardPanel)
+        panel:Add(guideLabel)
+        panel:Add(closeButton)
+        SetRelativeSize(title, 90, 5)
+        SetRelativeSize(tabs, 90, 10)
+        SetRelativeSize(leaderboardPanel, 90, 68)
+        SetRelativeSize(guideLabel, 90, 10)
+        SetRelativeSize(closeButton, 90, 5)
+        ShowRankingData(common.NRankingTypeDatingScore(),leaderboardPanel,guideLabel)
     end)
 end
 
-function ShowRankingData(rankingType)
+function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
     leaderboardPanel:Clear()
     local ve = VisualElement.new()
-    ve:AddToClassList("HorizontalLayout")
+    ve:AddToClassList("HorizontalSpaceBetween")
     local variableString = rankingType == common.NRankingTypeDatingScore() and "Name" or "Couple"
     ve:Add(CreateLabel(variableString,FontSize.heading,Colors.white))
     ve:Add(CreateLabel("Score",FontSize.heading,Colors.white))
@@ -335,18 +342,26 @@ function ShowRankingData(rankingType)
     else
         for i =1 , #data do
             ve = VisualElement.new()
-            ve:AddToClassList("HorizontalLayout")
-            ve:Add(CreateLabel(tostring(i),FontSize.normal,Color.white))
-            ve:Add(CreateLabel(data[i].name,FontSize.normal,Color.white))
-            ve:Add(CreateLabel(data[i].score,FontSize.normal,Color.white))
+            ve:AddToClassList("HorizontalSpaceBetween")
+            local playerVe = VisualElement.new()
+            playerVe:AddToClassList("HorizontalLayout")
+            playerVe:Add(CreateLabel(data[i].rank,FontSize.normal,Colors.white))
+            local nameLabel = CreateLabel(data[i].name,FontSize.normal,Colors.white)
+            nameLabel.style.marginLeft = StyleLength.new(Length.new(0.05*Screen.dpi))
+            nameLabel.style.maxWidth = StyleLength.new(Length.Percent(80))
+            nameLabel:AddToClassList("LeftTextAlign")
+            playerVe:Add(nameLabel)
+            ve:Add(playerVe)
+            ve:Add(CreateLabel(data[i].score,FontSize.normal,Colors.white))
             leaderboardPanel:Add(ve)
         end
     end
     variableString = rankingType == common.NRankingTypeDatingScore() and
-    "You get 1 point for each successful date with a new partner" 
+    "You get 1 point for each date with a new partner" 
     or 
-    "You get 1 point for each successful date with an existing partner"
-    leaderboardPanel:Add(CreateLabel(variableString,FontSize.normal,Colors.lightGrey))
+    "You get 1 point for each date with an existing partner"
+    guideLabel:SetPrelocalizedText(variableString,false)
+
 end
 
 function CreateTabs(options)

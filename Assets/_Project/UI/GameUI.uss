@@ -29,6 +29,13 @@
     -unity-text-align: middle-left;
 }
 
+.HorizontalSpaceBetween
+{
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .HorizontalLayout{
     width: 100%;
     flex-direction: row;
