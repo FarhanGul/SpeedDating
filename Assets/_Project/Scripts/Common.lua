@@ -1,13 +1,13 @@
 --!Type(Module)
 local events = {}
 
---!SerializeField
-local isProductionBuild : boolean = false
-
 -- Functions
 function self:ClientAwake()
-    if(isProductionBuild) then print("PRODUCTION BUILD")
-    else print("DEVELOPMENT BUILD") end
+    if(client.localPlayer.name == "FarhanGulDev") then
+        if( not CUseProductionStorage()) then print("Using Development Storage") end
+        if( CEnableDevCommands()) then print("Development commands enabled") end
+        if( CEnableUIDebugging()) then print("UI Debugging enabled") end
+    end
 end
 
 -- Function accepts list of alternative wait and functions
@@ -61,10 +61,6 @@ function GetRandomExcluding(from, to, exclude)
     return rand
 end
 
-function IsProductionBuild()
-    return isProductionBuild
-end
-
 -- Events
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
@@ -108,11 +104,18 @@ function NVerdictTypeAvailability() return "VerdictTypeAvailability" end
 function TSeatAvailabilityCooldown() return 4 end
 
 -- Constants
-function CRequiredProgress() return 1 end
-function CVisibleTopRanks() return 8 end
-function CRelationshipIdDelimiter() return "," end
+
+function CRequiredProgress() return CEnableQuickGame() and 1 or 8 end
+function CVisibleTopRanks() return 6 end
+function CRelationshipIdDelimiter() return "," end 
+
+-- Development Constants
+function CUseProductionStorage() return false end
+function CEnableDevCommands() return false end
+function CEnableUIDebugging() return false end
+function CEnableQuickGame() return false end
 
 -- Storage Keys
-function KDatingLeaderboard() return  isProductionBuild and "DatingLeaderboard" or "_DatingLeaderboard" end
-function KRelationshipLeaderboard() return  isProductionBuild and "RelationshipLeaderboard" or "_RelationshipLeaderboard" end
-function KPartnerHistory() return  isProductionBuild and "PartnerHistory" or "_PartnerHistory" end
+function KDatingLeaderboard() return CUseProductionStorage() and "DatingLeaderboard" or "_DatingLeaderboard" end
+function KRelationshipLeaderboard() return  CUseProductionStorage() and "RelationshipLeaderboard" or "_RelationshipLeaderboard" end
+function KPartnerHistory() return  CUseProductionStorage() and "PartnerHistory" or "_PartnerHistory" end

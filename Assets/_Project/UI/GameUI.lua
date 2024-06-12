@@ -22,9 +22,6 @@ local Colors = {
     blue = Color.new(115/255, 185/255, 1),
 }
 
---!SerializeField
-local isDebuggingEnabled : boolean = false
-
 -- Private
 local chatPanel : UIScrollView
 local gamePanel : VisualElement
@@ -42,7 +39,7 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EPlayerReceivedQuestionFromServer(),ShowQuestionReceived)
     common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),ShowQuestionSubmitted)
     common.SubscribeEvent(common.EUpdateResultStatus(),HandleResultStatusUpdated)
-    if(isDebuggingEnabled) then ShowDebugUI() else ShowHome() end
+    if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowHome() end
 end
 
 function ShowVerdictPending(panel)

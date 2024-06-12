@@ -10,7 +10,7 @@ function self:ClientAwake()
         StartPrivateChat(args[2])
     end)
     Chat.TextMessageReceivedHandler:Connect(function(channel,_from,_message)
-        if( not common.IsProductionBuild() and string.sub(_message,1,1) == "@") then
+        if( common.CEnableDevCommands() and string.sub(_message,1,1) == "@") then
             if(_from == client.localPlayer) then
                 HandleDevMode(string.sub(_message,2,-1))
             end
