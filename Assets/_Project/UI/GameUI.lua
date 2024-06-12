@@ -308,9 +308,17 @@ function ShowRanking()
     ranking.FetchRelationshipLeaderboard(function()end)
     ranking.FetchDatingLeaderboard(function() 
         local panel = RenderFullScreenPanel()
-        panel:Add(CreateLabel("Ranking",FontSize.heading))
-        panel:Add(CreateButton("Dating", function() ShowRankingData(common.NRankingTypeDatingScore()) end,Colors.blue))
-        panel:Add(CreateButton("Relationship", function() ShowRankingData(common.NRankingTypeRelationshipScore()) end,Colors.blue))
+        panel:Add(CreateLabel("Ranking",FontSize.heading,Colors.black))
+
+        local tabOptions = {{
+            text = "Dating",
+            pressed = function() ShowRankingData(common.NRankingTypeDatingScore()) end
+        },{
+            text = "Relationship",
+            pressed = function() ShowRankingData(common.NRankingTypeRelationshipScore()) end
+        }}
+        panel:Add(CreateTabs(tabOptions))
+
         leaderboardPanel = VisualElement.new()
         panel:Add(leaderboardPanel)
         panel:Add(CreateButton("Close", function()
@@ -353,6 +361,39 @@ end
 function ShowRelationshipScore()
     leaderboardPanel:Clear()
     leaderboardPanel:Add(CreateLabel("You get 1 point for each successful date with an existing partner",FontSize.normal,Colors.black))
+end
+
+function CreateTabs(options)
+    local ve = VisualElement.new()
+    ve:AddToClassList("HorizontalLayout")
+    -- SetBackgroundColor(ve, Colors.darkGrey)
+    for i = 1 , #options do
+        local button = UIButton.new()
+        button.style.color = StyleColor.new(Color.clear)
+        button:Add(CreateLabel(options[i].text,FontSize.normal,Color.white)) 
+        button.style.borderBottomColor = StyleColor.new(Colors.blue)
+        button:RegisterPressCallback(function()
+            for j = 1 , ve.childCount do
+                local child = ve:ElementAt(j-1)
+                if(button == child) then
+                    -- Select
+                    child:ElementAt(0).style.color = StyleColor.new(Colors.blue)
+                    child.style.borderBottomWidth = StyleLength.new(Length.new(0.01*Screen.dpi))
+                else
+                    -- Unselect
+                    child:ElementAt(0).style.color = StyleColor.new(Colors.white)
+                    child.style.borderBottomWidth = StyleLength.new(Length.new(0))
+                end
+            end
+            options[i].pressed()
+        end)
+        ve:Add(button)
+        -- Select Default
+        ve:ElementAt(0):ElementAt(0).style.color = StyleColor.new(Colors.blue)
+        ve:ElementAt(0).style.borderBottomWidth = StyleLength.new(Length.new(0.01*Screen.dpi))
+    end
+
+    return ve
 end
 
 function CreateLabel(...)

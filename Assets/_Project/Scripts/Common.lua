@@ -111,7 +111,7 @@ function CRelationshipIdDelimiter() return "," end
 
 -- Development Constants
 function CUseProductionStorage() return false end
-function CEnableDevCommands() return false end
+function CEnableDevCommands() return true end
 function CEnableUIDebugging() return false end
 function CEnableQuickGame() return false end
 
