@@ -340,6 +340,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
     if(#data == 0) then
         leaderboardPanel:Add(CreateLabel("Looks like no one has scored yet. Start dating!",FontSize.normal,Colors.lightGrey))
     else
+        local myEntryShown = false
         for i =1 , #data do
             ve = VisualElement.new()
             ve:AddToClassList("HorizontalSpaceBetween")
@@ -351,6 +352,10 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
             nameLabel.style.maxWidth = StyleLength.new(Length.Percent(80))
             nameLabel:AddToClassList("LeftTextAlign")
             playerVe:Add(nameLabel)
+            if( string.match(data[i].name, client.localPlayer.name)~= nil and not myEntryShown )then
+                ve:AddToClassList("MyLeaderboardEntry")
+                myEntryShown = true
+            end
             ve:Add(playerVe)
             ve:Add(CreateLabel(data[i].score,FontSize.normal,Colors.white))
             leaderboardPanel:Add(ve)

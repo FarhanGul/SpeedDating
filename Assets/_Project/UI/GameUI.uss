@@ -19,6 +19,10 @@
     background-color: #7D7C88;
 }
 
+.MyLeaderboardEntry{
+    background-color: #3F3E46;
+}
+
 .ScrollViewContent {
     flex-direction: column;
     flex-wrap: wrap;

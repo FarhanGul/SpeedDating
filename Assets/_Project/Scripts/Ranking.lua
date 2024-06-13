@@ -38,7 +38,6 @@ function self:ServerAwake()
         end)
     end)
     e_sendDateCompleteToServer:Connect(function(sender,player,partner)
-        print("SendDateCompleteToServer : "..player.name.. " & "..partner.name)
         local pairId = GetUniquePairIdentifier(player.name,partner.name)
         -- Fetch Partner History
         FetchPartnerHistoryFromStorage(function(partnerHistory)
@@ -56,7 +55,6 @@ function self:ServerAwake()
         Storage.DeleteValue(common.KDatingLeaderboard())
         Storage.DeleteValue(common.KRelationshipLeaderboard())
         Storage.DeleteValue(common.KPartnerHistory())
-        print("Deleted Storage")
     end)
 end
 
@@ -189,8 +187,45 @@ function GetFormattedLeaderboard(player,fullLeaderboard,isKeyUniquePairId)
     return formatted
 end
 
-function DeleteStorage()
-    if(not common.IsProductionBuild()) then
+function DevelopmentOnlyDeleteStorage()
+    if(not common.CUseProductionStorage()) then
         e_sendDeleteStorageToServer:FireServer()
+        print("Deleted Storage")
+    end
+end
+
+function DevelopmentOnlyPopulateLeaderboards()
+    if(not common.CUseProductionStorage()) then
+        local p1 = {}
+        local p2 = {}
+        local type = "IncrementRelationship"
+        if(type == "TopDating") then
+            for i = 1, 10 do
+                p1.name = "Player "..tostring(i)
+                p2.name = "Player "..tostring(i*3)
+                e_sendDateCompleteToServer:FireServer(p1,p2)
+                p1.name = "Player "..tostring(i)
+                p2.name = "Player "..tostring(i*6)
+                e_sendDateCompleteToServer:FireServer(p1,p2)
+            end
+        elseif(type == "IncrementDating") then
+            p1.name = "FarhanGulDev"
+            p2.name = "LowRankPlayer"..tostring(math.random(1,1000000))
+            e_sendDateCompleteToServer:FireServer(p1,p2)
+        elseif(type == "TopRelationship") then
+            for i = 1, 10 do
+                p1.name = "Player "..tostring(math.random(1,1000000))
+                p2.name = "Player "..tostring(math.random(1,1000000))
+                local randomCount = math.random(4,8)
+                for j = 1,randomCount do
+                    e_sendDateCompleteToServer:FireServer(p1,p2)
+                end
+            end
+        elseif(type == "IncrementRelationship") then
+            p1.name = "FarhanGulDev"
+            p2.name = "MyPartner"
+            e_sendDateCompleteToServer:FireServer(p1,p2)
+        end
+        print("Populated leaderboard with dummy data "..type)
     end
 end
