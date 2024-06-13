@@ -48,7 +48,7 @@ function ShowVerdictPending(panel)
 end
 
 function ShowResultStatusBothAccepted(panel)
-    panel:Add(CreateLabel("Your date was a success!",FontSize.heading,Colors.white))
+    panel:Add(CreateLabel("Date finished",FontSize.heading,Colors.white))
     panel:Add(CreateLabel("Keep dating to improve your relationship score",FontSize.normal,Colors.lightGrey))
     panel:Add(CreateButton("Date again", function()
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayAgain())
