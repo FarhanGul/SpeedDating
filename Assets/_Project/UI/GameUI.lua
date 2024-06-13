@@ -346,18 +346,38 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
             ve:AddToClassList("HorizontalSpaceBetween")
             local playerVe = VisualElement.new()
             playerVe:AddToClassList("HorizontalLayout")
-            playerVe:Add(CreateLabel(data[i].rank,FontSize.normal,Colors.white))
-            local nameLabel = CreateLabel(data[i].name,FontSize.normal,Colors.white)
-            nameLabel.style.marginLeft = StyleLength.new(Length.new(0.05*Screen.dpi))
-            nameLabel.style.maxWidth = StyleLength.new(Length.Percent(80))
-            nameLabel:AddToClassList("LeftTextAlign")
-            playerVe:Add(nameLabel)
+            local rankLabel = CreateLabel(data[i].rank,FontSize.normal,Colors.white)
+            rankLabel.style.width = StyleLength.new(Length.Percent(10))
+            playerVe:Add(rankLabel)
+            playerVe.style.width = StyleLength.new(Length.Percent(75))
+            if(data[i].isKeyPairId) then
+                local labels = {}
+                local couple = ranking.GetOriginalStrings(data[i].name)
+                labels[1] = CreateLabel(couple[1],FontSize.normal,Colors.white)
+                labels[2] = CreateLabel("&",FontSize.normal,Colors.lightGrey)
+                labels[3] = CreateLabel(couple[2],FontSize.normal,Colors.white)
+                for i=1,#labels do
+                    labels[i].style.marginLeft = StyleLength.new(Length.new( (i == 1 and 0.03 or 0.005)*Screen.dpi))
+                    if(i~=2) then labels[i]:AddToClassList("DontOverflow") end
+                    labels[i]:AddToClassList("LeftTextAlign")
+                    playerVe:Add(labels[i])
+                end
+            else
+                local nameLabel = CreateLabel(data[i].name,FontSize.normal,Colors.white)
+                -- local nameLabel = CreateLabel("Really really super duper ultra mega long name",FontSize.normal,Colors.white)
+                nameLabel.style.marginLeft = StyleLength.new(Length.new(0.03*Screen.dpi))
+                nameLabel:AddToClassList("DontOverflow")
+                nameLabel:AddToClassList("LeftTextAlign")
+                playerVe:Add(nameLabel)
+            end
             if( string.match(data[i].name, client.localPlayer.name)~= nil and not myEntryShown )then
                 ve:AddToClassList("MyLeaderboardEntry")
                 myEntryShown = true
             end
             ve:Add(playerVe)
-            ve:Add(CreateLabel(data[i].score,FontSize.normal,Colors.white))
+            local scoreLabel = CreateLabel(data[i].score,FontSize.normal,Colors.white)
+            scoreLabel.style.width = StyleLength.new(Length.Percent(15))
+            ve:Add(scoreLabel)
             leaderboardPanel:Add(ve)
         end
     end

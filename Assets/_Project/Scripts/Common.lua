@@ -107,7 +107,7 @@ function TSeatAvailabilityCooldown() return 4 end
 -- Constants
 
 function CRequiredProgress() return CEnableQuickGame() and 2 or 8 end
-function CVisibleTopRanks() return 6 end
+function CVisibleTopRanks() return 8 end
 function CRelationshipIdDelimiter() return "," end 
 
 -- Development Constants
