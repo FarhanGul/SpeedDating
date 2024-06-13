@@ -221,14 +221,12 @@ function ShowGameTurn(args)
         for i = 1, #args[2] do
             local button = CreateButton(args[2][i], function()
                 common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),args[2][i],true)
-            end,Colors.grey)
-            button:AddToClassList("QuestionButton")
+            end,Colors.grey,"QuestionButton")
             scrollView:Add(button)
         end
         local button = CreateButton("Custom Question", function()
             common.InvokeEvent(common.EChooseCustomQuestion())
-        end,Colors.grey)
-        button:AddToClassList("QuestionButton")
+        end,Colors.grey,"QuestionButton")
         scrollView:Add(button)
     else
         gamePanel:Add(CreateLabel("Waiting For Question...",FontSize.heading,Colors.white))
@@ -321,7 +319,6 @@ function ShowRanking()
         SetRelativeSize(tabs, 90, 10)
         SetRelativeSize(leaderboardPanel, 90, 68)
         SetRelativeSize(guideLabel, 90, 10)
-        SetRelativeSize(closeButton, 90, 5)
         ShowRankingData(common.NRankingTypeDatingScore(),leaderboardPanel,guideLabel)
     end)
 end
@@ -432,14 +429,16 @@ function CreateLabel(...)
     label:SetPrelocalizedText(text, false)
     label.style.color = StyleColor.new(color)
     label.style.fontSize = StyleLength.new(Length.new(fontSize))
+    label:AddToClassList("DefaultLabel")
     return label
 end
 
-function CreateButton(text,onPressed,color)
+function CreateButton(text,onPressed,color,class)
     local button = UIButton.new()
     SetBackgroundColor(button, color)
     local label = CreateLabel(text,FontSize.normal,Colors.white)
     button:Add(label) 
+    button:AddToClassList(class == nil and "DefaultButton" or class)
     button:RegisterPressCallback(onPressed)
     return button
 end

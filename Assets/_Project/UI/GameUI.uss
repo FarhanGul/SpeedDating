@@ -39,6 +39,16 @@
     margin: 1%;
 }
 
+.DefaultButton{
+    margin:4px;
+    width:200px;
+    height:30px;
+}
+
+.DefaultLabel{
+    margin:2px
+}
+
 .DontOverflow{
     flex-shrink: 1;
     white-space: nowrap;
