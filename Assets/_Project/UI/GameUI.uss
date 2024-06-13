@@ -49,6 +49,10 @@
     margin:2px
 }
 
+.Grow{
+    flex-grow: 1;
+}
+
 .DontOverflow{
     flex-shrink: 1;
     white-space: nowrap;
@@ -62,6 +66,13 @@
 
 .RightTextAlign{
     -unity-text-align: middle-right;
+}
+
+.GamePanel{
+    width: 95%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    border-radius: 5px;
 }
 
 .HorizontalSpaceBetween

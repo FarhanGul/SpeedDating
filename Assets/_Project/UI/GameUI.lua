@@ -143,29 +143,25 @@ function ShowDialgoueGame()
     root:Clear()
     local mainPanel = VisualElement.new()
     SetRelativeSize(mainPanel, 100, 100)
+    mainPanel.style.backgroundColor = StyleColor.new(Colors.black)
+
     -- Game Panel
     gamePanel = VisualElement.new()
-    SetRelativeSize(gamePanel, 100, 45)
+    gamePanel:AddToClassList("GamePanel")
     gamePanel.style.backgroundColor = StyleColor.new(Colors.darkGrey)
-    gamePanel:Add(CreateLabel("Game View",FontSize.heading,Colors.white))
     -- Chat Panel
     chatPanel = UIScrollView.new()
-    SetRelativeSize(chatPanel, 100, 45)
+    chatPanel:AddToClassList("Grow")
+    SetRelativeSize(chatPanel, 100, -1)
     chatPanel:AddToClassList("ScrollViewContent")
-    chatPanel.style.backgroundColor = StyleColor.new(Colors.black)
     local startingLabel = CreateLabel("This is your private chat, it is only visible to you and your partner. Start chatting and have fun! Ask questions in order to progress your date.",FontSize.normal,Colors.white)
     startingLabel:AddToClassList("StartingLabel")
     chatPanel:Add(startingLabel)    
-    -- Footer
-    local footerPanel = VisualElement.new()
-    SetRelativeSize(footerPanel, 100, 10)
     progressBar = CreateDateProgressBar()
-    SetBackgroundColor(footerPanel, Colors.black)
-    footerPanel:Add(progressBar)
     -- Construct
     mainPanel:Add(gamePanel)
     mainPanel:Add(chatPanel)
-    mainPanel:Add(footerPanel)
+    mainPanel:Add(progressBar)
     root:Add(mainPanel)
 end
 
@@ -180,7 +176,6 @@ end
 
 function CreateDateProgressBar()
     local bar = UIProgressBar.new()
-    SetRelativeSize(bar, 80, 100)
     bar.value = 0
     return bar
 end
@@ -236,7 +231,9 @@ end
 function ShowDialgoueGameIntro(args)
     partner = args[2]
     local panel = RenderFullScreenPanel()
-    panel:Add(CreateLabel("You are dating "..args[2].name,FontSize.normal,Colors.white))
+    local label = CreateLabel("You are dating "..args[2].name,FontSize.normal,Colors.white)
+    SetRelativeSize(label, 100, 100)
+    panel:Add(label)
 end
 
 function HandlePrivateMessage(args)
@@ -354,15 +351,14 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
                 labels[2] = CreateLabel("&",FontSize.normal,Colors.lightGrey)
                 labels[3] = CreateLabel(couple[2],FontSize.normal,Colors.white)
                 for i=1,#labels do
-                    labels[i].style.marginLeft = StyleLength.new(Length.new( (i == 1 and 9 or 6)))
+                    labels[i].style.marginLeft = StyleLength.new(Length.new( (i == 1 and 7 or 4)))
                     if(i~=2) then labels[i]:AddToClassList("DontOverflow") end
                     labels[i]:AddToClassList("LeftTextAlign")
                     playerVe:Add(labels[i])
                 end
             else
                 local nameLabel = CreateLabel(data[i].name,FontSize.normal,Colors.white)
-                -- local nameLabel = CreateLabel("Really really super duper ultra mega long name",FontSize.normal,Colors.white)
-                nameLabel.style.marginLeft = StyleLength.new(Length.new(9))
+                nameLabel.style.marginLeft = StyleLength.new(Length.new(7))
                 nameLabel:AddToClassList("DontOverflow")
                 nameLabel:AddToClassList("LeftTextAlign")
                 playerVe:Add(nameLabel)
