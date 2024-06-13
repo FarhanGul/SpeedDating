@@ -28,13 +28,14 @@ namespace Highrise.Lua.Generated
         [SerializeField] public System.Boolean m_canRotate = true;
         [SerializeField] public System.Boolean m_canZoom = true;
         [SerializeField] public System.Double m_touchRotationDampener = 0.4;
-        [SerializeField] public UnityEngine.Vector3 m_pivot = default;
+        [Tooltip("The pivot point that the target will be rotating around and the input plane will spawn at.")]
+        [SerializeField] public UnityEngine.Vector3 m_pivot = new Vector3(0, 0, 0);
         [Header("Zoom Settings")]
         [SerializeField] public System.Double m_zoomMin = 10;
         [SerializeField] public System.Double m_zoomMax = 50;
         [Header("Rotation Settings")]
         [SerializeField] public System.Double m_yawOffsetMax = 10;
-        [SerializeField] public System.Double m_yawOffsetMin = 0;
+        [SerializeField] public System.Double m_yawOffsetMin = -10;
 
         protected override SerializedPropertyValue[] SerializeProperties()
         {

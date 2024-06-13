@@ -378,11 +378,11 @@ function CreateTabs(options)
                 if(button == child) then
                     -- Select
                     child:ElementAt(0).style.color = StyleColor.new(Colors.blue)
-                    child.style.borderBottomWidth = StyleLength.new(Length.new(0.01*Screen.dpi))
+                    child.style.borderBottomWidth = StyleFloat.new(0.01*Screen.dpi)
                 else
                     -- Unselect
                     child:ElementAt(0).style.color = StyleColor.new(Colors.white)
-                    child.style.borderBottomWidth = StyleLength.new(Length.new(0))
+                    child.style.borderBottomWidth =  StyleFloat.new(0)
                 end
             end
             options[i].pressed()
@@ -390,7 +390,7 @@ function CreateTabs(options)
         ve:Add(button)
         -- Select Default
         ve:ElementAt(0):ElementAt(0).style.color = StyleColor.new(Colors.blue)
-        ve:ElementAt(0).style.borderBottomWidth = StyleLength.new(Length.new(0.01*Screen.dpi))
+        ve:ElementAt(0).style.borderBottomWidth = StyleFloat.new(0.01*Screen.dpi)
     end
 
     return ve

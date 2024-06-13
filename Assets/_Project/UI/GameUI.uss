@@ -9,6 +9,16 @@
     -unity-text-align: middle-center;
 }
 
+.progress-bar__progress
+{
+    background-color: #0DA6FC;
+}
+
+.progress-bar__background
+{
+    background-color: #7D7C88;
+}
+
 .ScrollViewContent {
     flex-direction: column;
     flex-wrap: wrap;
