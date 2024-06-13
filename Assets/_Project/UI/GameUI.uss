@@ -50,6 +50,10 @@
     -unity-text-align: middle-left;
 }
 
+.RightTextAlign{
+    -unity-text-align: middle-right;
+}
+
 .HorizontalSpaceBetween
 {
     width: 100%;
