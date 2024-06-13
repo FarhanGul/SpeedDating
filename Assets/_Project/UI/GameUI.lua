@@ -9,9 +9,8 @@ local waitingForCustomQuestion = false
 
 -- Configuration
 local FontSize = {
-    small = 0.03,
-    normal = 0.05,
-    heading = 0.07
+    normal = 17,
+    heading = 20
 }
 
 local Colors = {
@@ -262,7 +261,7 @@ function CreateChatMessage(player,message)
     local label = CreateLabel(richText,FontSize.normal,Colors.white)
     label:AddToClassList("LeftTextAlign")
     panel:Add(label)
-    SetMargin(panel, 0.02)
+    SetMargin(panel, 6)
     return panel
 end
 
@@ -350,7 +349,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
             rankLabel.style.width = StyleLength.new(Length.Percent(10))
             rankLabel:AddToClassList("DontOverflow")
             playerVe:Add(rankLabel)
-            playerVe.style.width = StyleLength.new(Length.Percent(75))
+            playerVe.style.width = StyleLength.new(Length.Percent(80))
             if(data[i].isKeyPairId) then
                 local labels = {}
                 local couple = ranking.GetOriginalStrings(data[i].name)
@@ -358,7 +357,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
                 labels[2] = CreateLabel("&",FontSize.normal,Colors.lightGrey)
                 labels[3] = CreateLabel(couple[2],FontSize.normal,Colors.white)
                 for i=1,#labels do
-                    labels[i].style.marginLeft = StyleLength.new(Length.new( (i == 1 and 0.03 or 0.005)*Screen.dpi))
+                    labels[i].style.marginLeft = StyleLength.new(Length.new( (i == 1 and 9 or 6)))
                     if(i~=2) then labels[i]:AddToClassList("DontOverflow") end
                     labels[i]:AddToClassList("LeftTextAlign")
                     playerVe:Add(labels[i])
@@ -366,7 +365,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
             else
                 local nameLabel = CreateLabel(data[i].name,FontSize.normal,Colors.white)
                 -- local nameLabel = CreateLabel("Really really super duper ultra mega long name",FontSize.normal,Colors.white)
-                nameLabel.style.marginLeft = StyleLength.new(Length.new(0.03*Screen.dpi))
+                nameLabel.style.marginLeft = StyleLength.new(Length.new(9))
                 nameLabel:AddToClassList("DontOverflow")
                 nameLabel:AddToClassList("LeftTextAlign")
                 playerVe:Add(nameLabel)
@@ -377,7 +376,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
             end
             ve:Add(playerVe)
             local scoreLabel = CreateLabel(data[i].score,FontSize.normal,Colors.white)
-            scoreLabel.style.width = StyleLength.new(Length.Percent(15))
+            scoreLabel.style.width = StyleLength.new(Length.Percent(10))
             scoreLabel:AddToClassList("DontOverflow")
             scoreLabel:AddToClassList("RightTextAlign")
             ve:Add(scoreLabel)
@@ -406,7 +405,7 @@ function CreateTabs(options)
                 if(button == child) then
                     -- Select
                     child:ElementAt(0).style.color = StyleColor.new(Colors.blue)
-                    child.style.borderBottomWidth = StyleFloat.new(0.01*Screen.dpi)
+                    child.style.borderBottomWidth = StyleFloat.new(3)
                 else
                     -- Unselect
                     child:ElementAt(0).style.color = StyleColor.new(Colors.white)
@@ -418,7 +417,7 @@ function CreateTabs(options)
         ve:Add(button)
         -- Select Default
         ve:ElementAt(0):ElementAt(0).style.color = StyleColor.new(Colors.blue)
-        ve:ElementAt(0).style.borderBottomWidth = StyleFloat.new(0.01*Screen.dpi)
+        ve:ElementAt(0).style.borderBottomWidth = StyleFloat.new(3)
     end
 
     return ve
@@ -432,7 +431,7 @@ function CreateLabel(...)
     local label = UILabel.new()
     label:SetPrelocalizedText(text, false)
     label.style.color = StyleColor.new(color)
-    label.style.fontSize = StyleLength.new(Length.new(fontSize*Screen.dpi))
+    label.style.fontSize = StyleLength.new(Length.new(fontSize))
     return label
 end
 
@@ -446,7 +445,7 @@ function CreateButton(text,onPressed,color)
 end
 
 function SetMargin(ve:VisualElement,amount)
-    local scaledAmount = amount * Screen.dpi
+    local scaledAmount = amount
     ve.style.marginTop = StyleLength.new(Length.new(scaledAmount))
     ve.style.marginRight = StyleLength.new(Length.new(scaledAmount))
     ve.style.marginBottom = StyleLength.new(Length.new(scaledAmount))

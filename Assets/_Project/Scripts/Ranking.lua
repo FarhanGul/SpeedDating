@@ -165,7 +165,6 @@ function GetFormattedLeaderboard(player,fullLeaderboard,isKeyUniquePairId)
         else
             if(k == player.name) then isPlayerFound = true end
         end
-        -- local _name = isKeyUniquePairId and ( GetOriginalStrings(k)[1].." & "..GetOriginalStrings(k)[2] ) or k
         table.insert(formatted,{name=k,score=v,rank=currentCount+1,isKeyPairId=isKeyUniquePairId})
         currentCount += 1
         if(currentCount == common.CVisibleTopRanks()) then break end
@@ -177,7 +176,6 @@ function GetFormattedLeaderboard(player,fullLeaderboard,isKeyUniquePairId)
             local v = pair.value
             local condition = isKeyUniquePairId and (GetOriginalStrings(k)[1] == player.name or GetOriginalStrings(k)[2] == player.name) or (k == player.name)
             if(condition) then
-                -- local _name = isKeyUniquePairId and ( GetOriginalStrings(k)[1].." & "..GetOriginalStrings(k)[2] ) or k
                 table.insert(formatted,{name=k,score=v,rank=currentCount+1,isKeyPairId=isKeyUniquePairId})
                 break
             end 
