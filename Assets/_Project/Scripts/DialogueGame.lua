@@ -32,7 +32,6 @@ function self:ServerAwake()
 end
 
 function self:ClientAwake()
-    print("Total Questions : "..#data.GetQuestions())
     common.SubscribeEvent(common.ESubmitVerdict(),HandlePlayerSubmittedVerdict)
     common.SubscribeEvent(common.EPlayerLeftSeat(),HandlePlayerLeftSeat)
     common.SubscribeEvent(common.EBeginDate(),BeginGame)

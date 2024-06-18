@@ -67,5 +67,5 @@ end
 
 function SetAvailability(isAvailable)
     canBeOccupied = isAvailable
-    outline:SetActive(isAvailable)
+    outline:SetActive(not isAvailable)
 end

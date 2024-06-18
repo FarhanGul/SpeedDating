@@ -289,7 +289,6 @@ function self:Update()
         return
     end
 
-    ConstrainTarget()
     UpdateInertia()
     UpdatePosition()
 end
