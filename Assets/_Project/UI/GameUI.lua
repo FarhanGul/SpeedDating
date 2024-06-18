@@ -152,7 +152,7 @@ function ShowDialgoueGame()
     -- Chat Panel
     chatPanel = UIScrollView.new()
     chatPanel:AddToClassList("Grow")
-    SetRelativeSize(chatPanel, 100, -1)
+    -- SetRelativeSize(chatPanel, 100, -1)
     chatPanel:AddToClassList("ScrollViewContent")
     local startingLabel = CreateLabel("This is your private chat, it is only visible to you and your partner. Start chatting and have fun! Ask questions in order to progress your date.",FontSize.normal,Colors.white)
     startingLabel:AddToClassList("StartingLabel")
