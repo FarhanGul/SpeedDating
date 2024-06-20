@@ -267,6 +267,7 @@ function HandlePrivateMessage(args)
             return
         end
         chatPanel:Add(CreateChatMessage(args[1], args[2]))
+        chatPanel:AdjustScrollOffsetForNewContent()
         chatPanel:ScrollToEnd()
     end
 end
@@ -288,6 +289,7 @@ function ShowDebugUI()
     ShowResultStatusBothAccepted(gamePanel)
     Timer.Every(3, function() 
         chatPanel:Add(CreateChatMessage(client.localPlayer,math.random(1,100000000)))
+        chatPanel:AdjustScrollOffsetForNewContent()
         chatPanel:ScrollToEnd()
     end)
 end
