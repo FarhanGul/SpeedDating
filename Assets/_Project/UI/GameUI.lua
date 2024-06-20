@@ -148,20 +148,42 @@ function ShowDialgoueGame()
     -- Game Panel
     gamePanel = VisualElement.new()
     gamePanel:AddToClassList("GamePanel")
-    gamePanel.style.backgroundColor = StyleColor.new(Colors.darkGrey)
-    gamePanel.style.flexShrink = StyleFloat.new(0)
     -- Chat Panel
     chatPanel = UIScrollView.new()
     chatPanel:AddToClassList("ScrollViewContent")
     local startingLabel = CreateLabel("This is your private chat, it is only visible to you and your partner. Start chatting and have fun! Ask questions in order to progress your date.",FontSize.normal,Colors.white)
     startingLabel:AddToClassList("StartingLabel")
-    chatPanel:Add(startingLabel)    
+    chatPanel:Add(startingLabel)   
+    --Progress Bar
     progressBar = CreateDateProgressBar()
+    --Exit Button
+    local exitButton = CreateButton("Leave", function()
+        ShowExitConfirmation()
+    end, Colors.red, nil)
+    
     -- Construct
+    mainPanel:Add(progressBar)
     mainPanel:Add(gamePanel)
     mainPanel:Add(chatPanel)
-    mainPanel:Add(progressBar)
+    mainPanel:Add(exitButton)
     root:Add(mainPanel)
+end
+
+function ShowExitConfirmation()
+    local modalContainer = VisualElement.new()
+    SetRelativeSize(modalContainer, 100, 100)
+    local modal = VisualElement.new()
+    modal:Add(CreateLabel("Are you sure you want to leave your date?",FontSize.normal,Colors.white))
+    modal:Add(CreateButton("Yes", function()
+        common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
+    end, Colors.red, nil))
+    modal:Add(CreateButton("No", function()
+        modalContainer:RemoveFromHierarchy()
+    end, Colors.blue, nil))
+    modal:AddToClassList("Modal")
+    modalContainer:AddToClassList("ModalContainer")
+    modalContainer:Add(modal)
+    root:Add(modalContainer)
 end
 
 function IncrementProgress()
@@ -260,12 +282,13 @@ function CreateChatMessage(player,message)
 end
 
 function ShowDebugUI()
-    ShowDialgoueGame()
-    ShowResultStatusBothAccepted(gamePanel)
-    Timer.Every(0.5, function() 
-        chatPanel:Add(CreateChatMessage(client.localPlayer,math.random(1,100000000)))
-        chatPanel:AdjustScrollOffsetForNewContent()
-    end)
+    -- ShowDialgoueGame()
+    -- ShowResultStatusBothAccepted(gamePanel)
+    -- Timer.Every(0.5, function() 
+    --     chatPanel:Add(CreateChatMessage(client.localPlayer,math.random(1,100000000)))
+    --     chatPanel:AdjustScrollOffsetForNewContent()
+    -- end)
+    ShowExitConfirmation()
 end
 
 function ShowHome()

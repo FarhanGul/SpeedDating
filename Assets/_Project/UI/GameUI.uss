@@ -75,11 +75,27 @@
     -unity-text-align: middle-right;
 }
 
+.ModalContainer{
+    position: absolute;
+    justify-content: center;
+}
+
+.Modal{
+    width: 90%;
+    padding: 30px;
+    position: absolute;
+    background-color:#28272D;
+    height: auto;
+    border-radius: 5px;
+}
+
 .GamePanel{
     width: 95%;
     margin-top: 1%;
     margin-bottom: 1%;
     border-radius: 5px;
+    background-color: #28272D;
+    flex-shrink: 0;
 }
 
 .HorizontalSpaceBetween
