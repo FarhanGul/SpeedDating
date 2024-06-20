@@ -29,6 +29,7 @@ local gamePanel : VisualElement
 local progressBar : UIProgressBar
 local partner
 local progress
+local exitButton
 
 -- Functions
 function self:ClientAwake()
@@ -73,8 +74,8 @@ function ShowResultStatusUnrequited(panel)
 end
 
 function ShowResultStatusPartnerWillPlayLater(panel)
-    panel:Add(CreateLabel("Your partner had to leave",FontSize.heading,Colors.white))
-    panel:Add(CreateLabel("They will catch you later",FontSize.normal,Colors.lightGrey))
+    panel:Add(CreateLabel("Partner left",FontSize.heading,Colors.white))
+    panel:Add(CreateLabel("Your partner left the date",FontSize.normal,Colors.lightGrey))
 end
 
 function ShowResultStatusPartnerLeft(panel)
@@ -88,6 +89,7 @@ function UninitializeDialogueGame()
     chatPanel = nil
     progressBar = nil
     waitingForCustomQuestion = false
+    exitButton:RemoveFromHierarchy()
 end
 
 function HandleResultStatusUpdated(args)
@@ -157,15 +159,15 @@ function ShowDialgoueGame()
     --Progress Bar
     progressBar = CreateDateProgressBar()
     --Exit Button
-    local exitButton = CreateButton("Leave", function()
+    exitButton = CreateButton("Leave", function()
         ShowExitConfirmation()
     end, Colors.red, nil)
     
     -- Construct
-    mainPanel:Add(progressBar)
     mainPanel:Add(gamePanel)
     mainPanel:Add(chatPanel)
     mainPanel:Add(exitButton)
+    mainPanel:Add(progressBar)
     root:Add(mainPanel)
 end
 
@@ -265,7 +267,7 @@ function HandlePrivateMessage(args)
             return
         end
         chatPanel:Add(CreateChatMessage(args[1], args[2]))
-        chatPanel:AdjustScrollOffsetForNewContent()
+        chatPanel:ScrollToEnd()
     end
 end
 
@@ -282,13 +284,12 @@ function CreateChatMessage(player,message)
 end
 
 function ShowDebugUI()
-    -- ShowDialgoueGame()
-    -- ShowResultStatusBothAccepted(gamePanel)
-    -- Timer.Every(0.5, function() 
-    --     chatPanel:Add(CreateChatMessage(client.localPlayer,math.random(1,100000000)))
-    --     chatPanel:AdjustScrollOffsetForNewContent()
-    -- end)
-    ShowExitConfirmation()
+    ShowDialgoueGame()
+    ShowResultStatusBothAccepted(gamePanel)
+    Timer.Every(3, function() 
+        chatPanel:Add(CreateChatMessage(client.localPlayer,math.random(1,100000000)))
+        chatPanel:ScrollToEnd()
+    end)
 end
 
 function ShowHome()
