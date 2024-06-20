@@ -46,11 +46,18 @@
 }
 
 .DefaultLabel{
-    margin:2px
+    margin:2px;
+    width: auto;
+    height: auto;
 }
 
 .Grow{
     flex-grow: 1;
+}
+
+.AutoSize{
+    width: auto;
+    height: auto;
 }
 
 .DontOverflow{
