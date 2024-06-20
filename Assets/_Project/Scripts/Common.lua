@@ -111,10 +111,10 @@ function CVisibleTopRanks() return 8 end
 function CRelationshipIdDelimiter() return "," end 
 
 -- Development Constants
-function CUseProductionStorage() return true end
-function CEnableDevCommands() return false end
+function CUseProductionStorage() return false end
+function CEnableDevCommands() return true end
 function CEnableUIDebugging() return false end
-function CEnableQuickGame() return false end
+function CEnableQuickGame() return true end
 
 -- Storage Keys
 function KDatingLeaderboard() return CUseProductionStorage() and "DatingLeaderboard" or "_DatingLeaderboard" end
