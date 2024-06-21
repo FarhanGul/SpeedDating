@@ -2,13 +2,17 @@
 local common = require("Common")
 
 -- Private
-local chatHistory
 local partner
+local seatedPlayers = {}
 
 function self:ClientAwake()
     common.SubscribeEvent(common.EBeginDate(),function(args)
-        StartPrivateChat(args[2])
+        partner = args[2]
     end)
+    common.SubscribeEvent(common.EEndDate(),function()
+        partner = nil
+    end)
+    common.SubscribeEvent(common.EUpdateSeatOccupant(),HandleUpdateSeatOccupant)
     Chat.TextMessageReceivedHandler:Connect(function(channel,_from,_message)
         if( common.CEnableDevCommands() and string.sub(_message,1,1) == "@") then
             if(_from == client.localPlayer) then
@@ -18,13 +22,22 @@ function self:ClientAwake()
         end
         if(partner ~= nil) then
             if(_from == client.localPlayer or _from == partner) then
-                table.insert(chatHistory,{from = _from,message = _message})
                 common.InvokeEvent(common.EPrivateMessageSent(),_from,_message)
             end
-        else
+        elseif(table.find(seatedPlayers,_from.name) == nil ) then
             Chat:DisplayTextMessage(channel, _from, _message)
         end
     end)
+end
+
+function HandleUpdateSeatOccupant(args)
+    seatedPlayers = {}
+    local data = args[1]:GetData()
+    for k,v in pairs(data) do
+        if(v.occupant ~= nil ) then
+            table.insert(seatedPlayers,v.occupant.name) 
+        end
+    end
 end
 
 function HandleDevMode(message)
@@ -39,9 +52,4 @@ function HandleDevMode(message)
     elseif(message == "pl") then
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
     end
-end
-
-function StartPrivateChat(_partner)
-    chatHistory = {}
-    partner = _partner
 end

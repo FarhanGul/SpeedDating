@@ -124,6 +124,7 @@ function EndGame(resultStatus)
     partner = nil
     waitingForAnswer = nil
     common.InvokeEvent(common.EUpdateResultStatus(),resultStatus)
+    common.InvokeEvent(common.EEndDate())
 end
 
 function GetRandomQuestions()

@@ -65,6 +65,7 @@ end
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
 function EBeginDate() return "BeginDate" end -- you(Player) , partner(Player) , isYourTurnFirst(Bool)
+function EEndDate() return "EndDate" end -- void
 function EPrivateMessageSent() return "PrivateMessageSent" end -- from(Player) , message(string)
 function ETurnStarted() return "TurnStarted" end -- isMyTurn(Bool)
 function ELocalPlayerSelectedQuestion() return "LocalPlayerSelectedQuestion" end -- question(string),sendOnChat(bool)
