@@ -1,9 +1,16 @@
 --!Type(Module)
 
+local openingQuestions = {
+    "Hi, how are you today?",
+    "Hey, what's your name?",
+    "Hey, how old are you?",
+    "Hey nice to meet you, how is it going?",
+    "Hi, which city are you from?",
+    "Hey, how's your day going so far?"
+}
+
 local questions = {
     -- What
-    "What's your real name?",
-    "What's your age?",
     "What's your biggest pet peeve",
     "What can easily make you angry?",
     "What's the most difficult task you have ever completed?",
@@ -208,6 +215,10 @@ local questions = {
     "Would you rather be forced to dance or sing along every time you heard music?",
     "Would you rather go to a water park or a dry park?"
 }
+
+function GetOpeningQuestions()
+    return openingQuestions
+end
 
 function GetQuestions()
     return questions

@@ -10,6 +10,7 @@ local waitingForAnswer = false
 local partnerVerdict
 local myVerdict
 local verdictType
+local isOpeningQuestion
 
 -- Events
 local e_sendPlayerQuestionToServer = Event.new("sendPlayerQuestionToServer")
@@ -53,6 +54,7 @@ end
 function BeginGame(args)
     SetVerdictType(common.NVerdictTypeAvailability())
     partner = args[2]
+    isOpeningQuestion = true
     isMyTurnToQuestion = args[3]
     Timer.new(2.5,function() 
         if(partner ~= nil) then StartTurn() end
@@ -61,7 +63,10 @@ end
 
 function StartTurn()
     local randomQuestions = nil
-    if(isMyTurnToQuestion) then randomQuestions = GetRandomQuestions() end
+    if(isMyTurnToQuestion) then
+        randomQuestions = GetRandomQuestions(isOpeningQuestion and common.NQuestionTypeOpening() or common.NQuestionTypeDefault())
+    end
+    isOpeningQuestion = false
     common.InvokeEvent(common.ETurnStarted(),isMyTurnToQuestion,randomQuestions)
 end
 
@@ -127,10 +132,11 @@ function EndGame(resultStatus)
     common.InvokeEvent(common.EEndDate())
 end
 
-function GetRandomQuestions()
-    common.ShuffleArray(data.GetQuestions())
+function GetRandomQuestions(questionType)
+    local questions = questionType == common.NQuestionTypeDefault() and data.GetQuestions() or data.GetOpeningQuestions()
+    common.ShuffleArray(questions)
     local randomQuestions = {}
-    for i=1,4 do randomQuestions[i] = data.GetQuestions()[i] end
+    for i=1,4 do randomQuestions[i] = questions[i] end
     return randomQuestions
 end
 

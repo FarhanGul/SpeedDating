@@ -95,31 +95,30 @@ function NResultStatusPartnerWillPlayLater() return "ResultStatusPartnerWillPlay
 -- RankingType
 function NRankingTypeDatingScore() return "RankingTypeDatingScore" end
 function NRankingTypeRelationshipScore() return "RankingTypeRelationshipScore" end
-
 -- Verdict
 function NVerdictAccept() return "VerdictAccept" end
 function NVerdictReject() return "VerdictReject" end
 function NVerdictPlayAgain() return "VerdictPlayAgain" end
 function NVerdictPlayLater() return "VerdictPlayLater" end
 function NVerdictPlayerLeft() return "VerdictPlayerLeft" end
-
 -- Verdict Type
 function NVerdictTypeAcceptance() return "VerdictTypeAcceptance" end
 function NVerdictTypeAvailability() return "VerdictTypeAvailability" end
+-- Question Type
+function NQuestionTypeDefault() return "QuestionTypeDefault" end
+function NQuestionTypeOpening() return "QuestionTypeOpening" end
 
 -- Duration
 function TSeatAvailabilityCooldown() return 4 end
 function TSeatNotInteractableAfterRefusalDuration() return 4 end
 
 -- Constants
-
 function CRequiredProgress() return CEnableQuickGame() and 2 or 8 end
 function CVisibleTopRanks() return 8 end
 function CRelationshipIdDelimiter() return "," end 
-
 -- Development Constants
 function CUseProductionStorage() return false end
-function CEnableDevCommands() return false end
+function CEnableDevCommands() return true end
 function CEnableUIDebugging() return false end
 function CEnableQuickGame() return false end
 
