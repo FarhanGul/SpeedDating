@@ -41,7 +41,41 @@ function self:ClientAwake()
     common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),ShowQuestionSubmitted)
     common.SubscribeEvent(common.EUpdateResultStatus(),HandleResultStatusUpdated)
     common.SubscribeEvent(common.EChooseCustomQuestion(),ShowAcceptingCustomQuestion)
+    common.SubscribeEvent(common.EDateRequestReceived(),ShowDateRequestReceived)
+    common.SubscribeEvent(common.EPermissionToSitRefused(),ShowPermissionToSitRefused)
+    common.SubscribeEvent(common.ETryToOccupySeat(),ShowAskingForPermission)
     if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowHome() end
+end
+
+function ShowAskingForPermission(args)
+    root:Clear()
+    local panel = VisualElement.new()
+    panel:Add(CreateLabel("Please wait",FontSize.heading))
+    panel:Add(CreateLabel("Asking for permission to sit",FontSize.normal,Colors.lightGrey))
+    root:Add(panel)
+end
+
+function ShowPermissionToSitRefused(args)
+    root:Clear()
+    local panel = VisualElement.new()
+    panel:Add(CreateLabel("Your partner is not interested, try another table",FontSize.heading))
+    root:Add(panel)
+    Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
+end
+
+function ShowDateRequestReceived(args)
+    local requestingPlayer = args[1]
+    root:Clear()
+    local panel = VisualElement.new()
+    panel:Add(CreateLabel(requestingPlayer.name.." has sent you a date request",FontSize.heading))
+    panel:Add(CreateButton("Accept", function()
+        common.InvokeEvent(common.ESubmitPermissionToSitVerdict(),common.NVerdictAccept())
+    end,Colors.blue))
+    panel:Add(CreateButton("Refuse", function()
+        common.InvokeEvent(common.ESubmitPermissionToSitVerdict(),common.NVerdictReject())
+        ShowSittingAlone()
+    end,Colors.red))
+    root:Add(panel)
 end
 
 function ShowVerdictPending(panel)

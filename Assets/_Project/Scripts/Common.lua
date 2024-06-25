@@ -75,7 +75,10 @@ function EUpdateResultStatus() return "UpdateResultStatus" end -- resultStatus(E
 function EUpdateSeatOccupant() return "UpdateSeatOccupant" end -- seats(Seats)
 function ETryToOccupySeat() return "TryToOccupySeat" end -- id(integer)
 function ESubmitVerdict() return "SubmitVerdict" end -- verdict(Enum Verdict)
-function EChooseCustomQuestion() return "ChooseCustomQuestion" end
+function EChooseCustomQuestion() return "ChooseCustomQuestion" end -- void
+function EDateRequestReceived() return "DateRequestReceived" end -- requestingPlayer(Player)
+function ESubmitPermissionToSitVerdict() return "SubmitPermissionToSitVerdict" end -- verdict(Enum Verdict)
+function EPermissionToSitRefused() return "PermissionToSitRefused" end -- void
 
 -- Enumerations
 -- Result Status
@@ -104,6 +107,7 @@ function NVerdictTypeAvailability() return "VerdictTypeAvailability" end
 
 -- Duration
 function TSeatAvailabilityCooldown() return 4 end
+function TSeatNotInteractableAfterRefusalDuration() return 4 end
 
 -- Constants
 
@@ -112,7 +116,7 @@ function CVisibleTopRanks() return 8 end
 function CRelationshipIdDelimiter() return "," end 
 
 -- Development Constants
-function CUseProductionStorage() return true end
+function CUseProductionStorage() return false end
 function CEnableDevCommands() return false end
 function CEnableUIDebugging() return false end
 function CEnableQuickGame() return false end
