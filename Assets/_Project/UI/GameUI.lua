@@ -44,6 +44,7 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EDateRequestReceived(),ShowDateRequestReceived)
     common.SubscribeEvent(common.EPermissionToSitRefused(),ShowPermissionToSitRefused)
     common.SubscribeEvent(common.ETryToOccupySeat(),ShowAskingForPermission)
+    common.SubscribeEvent(common.EPermissionToSitRequestCancelled(),ShowSittingAlone)
     if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowHome() end
 end
 
@@ -56,9 +57,14 @@ function ShowAskingForPermission(args)
 end
 
 function ShowPermissionToSitRefused(args)
+    local verdict = args[1]
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(CreateLabel("Your partner is not interested, try another table",FontSize.heading))
+    if(verdict == common.NVerdictReject()) then
+        panel:Add(CreateLabel("Your partner is not interested, try another table",FontSize.heading))
+    else
+        panel:Add(CreateLabel("Reqeust cancelled, your partner left the world",FontSize.heading))
+    end
     root:Add(panel)
     Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
 end

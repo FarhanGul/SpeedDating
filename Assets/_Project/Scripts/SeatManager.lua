@@ -7,6 +7,7 @@ local common = require("Common")
 local e_sendPlayerLeftSeatToServer = Event.new("sendPlayerLeftSeatToServer")
 local e_sendPlayerAskingPermissionToSitToServer = Event.new("sendPlayerAskingPermissionToSitToServer")
 local e_sendPlayerAskingPermissionToSitToClient = Event.new("sendPlayerAskingPermissionToSitToClient")
+local e_sendPermissionToSitRequestCancelledToClient = Event.new("sendPermissionToSitRequestCancelledToClient")
 local e_sendPermissionToSitVerdictToServer = Event.new("sendPermissionToSitVerdictToServer")
 local e_sendPermissionToSitRefusedToClient = Event.new("sendPermissionToSitRefusedToClient")
 local e_requestSeatsFromServer = Event.new("requestSeatStatusFromServer")
@@ -37,36 +38,53 @@ function Seats()
         end,
         UpdateSeat = function(self,_id,_newOccupant,_waitingForPermission)
             self._table[_id] = Seat(_id, _newOccupant,_waitingForPermission)
-            if(_newOccupant ~= nil and self:GetPartnerId(_id) ~= nil and self._table[self:GetPartnerId(_id)].occupant ~= nil ) then
+            if(_newOccupant ~= nil and self:GetPartnerSeatId(_id) ~= nil and self._table[self:GetPartnerSeatId(_id)].occupant ~= nil ) then
                 -- Both players are seated begin date
-                local otherOccupant = self._table[self:GetPartnerId(_id)].occupant
+                local otherOccupant = self._table[self:GetPartnerSeatId(_id)].occupant
                 local firstTurn = math.random(1,2)
                 e_sendBeginDateToClient:FireClient(_newOccupant,_newOccupant,otherOccupant,firstTurn == 1)
                 e_sendBeginDateToClient:FireClient(otherOccupant,otherOccupant,_newOccupant,firstTurn == 2)
             end
         end,
         HandleServerPlayerLeft = function(self,playerWhoLeft)
+            -- Check if they were waiting for permission if so send a cancel request
             for k , v in pairs(self._table) do
-                if ( v.occupant == playerWhoLeft ) then
-                    self:UpdateSeat(v.id,nil,nil)
-                    e_sendSeatsToClient:FireAllClients(seats:GetData())
-                    return
+                if ( v.waitingForPermission == playerWhoLeft ) then
+                    local seatedPlayer = self._table[seats:GetPartnerSeatId(v.id)].occupant
+                    e_sendPermissionToSitRequestCancelledToClient:FireClient(seatedPlayer)
+                    self:UpdateSeatAndNotifyAllClients(v.id,nil,nil)
                 end
+            end
+            local seat = self:GetSeat(playerWhoLeft)
+            if(seat ~= nil) then
+                -- If player was seated
+                local partnerSeat = self:GetPartnerSeat(playerWhoLeft)
+                -- Check if they were supposed to respond to a permission request 
+                if(partnerSeat.waitingForPermission ~= nil) then
+                    e_sendPermissionToSitRefusedToClient:FireClient(partnerSeat.waitingForPermission,common.NVerdictPlayerLeft())
+                    seats:UpdateSeat(partnerSeat.id,nil,nil)
+                end
+                seats:UpdateSeat(seat.id,nil,nil)
+                e_sendSeatsToClient:FireAllClients(seats:GetData())
             end
         end,
         AreBothSeatsEmpty = function(self,id)
             local isFirstSeatEmpty = self._table[id] == nil or self._table[id].occupant == nil
-            local partnerId = self:GetPartnerId(id)
+            local partnerId = self:GetPartnerSeatId(id)
             local isSecondSeatEmpty = self._table[partnerId] == nil or self._table[partnerId].occupant == nil
             return isFirstSeatEmpty and isSecondSeatEmpty
         end,
         GetPartnerPlayerFromSeatId = function(self,id)
-            local partnerId = self:GetPartnerId(id)
+            local partnerId = self:GetPartnerSeatId(id)
             return self._table[partnerId] ~= nil and self._table[partnerId].occupant or nil
         end,
         GetPartnerSeat = function(self,player)
-            local partnerId = self:GetPartnerId(self:GetSeat(player).id)
-            return self._table[partnerId] ~= nil and self._table[partnerId] or nil
+            local seat = self:GetSeat(player)
+            if(seat ~= nil ) then
+                local partnerId = self:GetPartnerSeatId(self:GetSeat(player).id)
+                return self._table[partnerId] ~= nil and self._table[partnerId] or nil
+            end
+            return nil
         end,
         GetSeat = function(self,player)
             for k , v in pairs(self._table) do
@@ -76,7 +94,7 @@ function Seats()
             end
             return nil
         end,
-        GetPartnerId = function(self,id)
+        GetPartnerSeatId = function(self,id)
             local otherId
             if ( id % 2 == 0 ) then otherId = id - 1
             else otherId = id + 1 end
@@ -139,11 +157,10 @@ function self:ServerAwake()
         if(verdict == common.NVerdictAccept()) then
             seats:UpdateSeatAndNotifyAllClients(waitingPlayerSeatId, playerWaitingToSit, nil)
         else
+            e_sendPermissionToSitRefusedToClient:FireClient(playerWaitingToSit,common.NVerdictReject())
             seats:UpdateSeatAndNotifyAllClients(waitingPlayerSeatId, nil, nil)
-            e_sendPermissionToSitRefusedToClient:FireClient(playerWaitingToSit)
         end
     end)
-
 end
 
 function self:ClientAwake()
@@ -164,8 +181,12 @@ function self:ClientAwake()
         common.InvokeEvent(common.EDateRequestReceived(),requestingPlayer)
     end)
 
-    e_sendPermissionToSitRefusedToClient:Connect(function()
-        common.InvokeEvent(common.EPermissionToSitRefused())
+    e_sendPermissionToSitRefusedToClient:Connect(function(verdict)
+        common.InvokeEvent(common.EPermissionToSitRefused(),verdict)
+    end)
+
+    e_sendPermissionToSitRequestCancelledToClient:Connect(function()
+        common.InvokeEvent(common.EPermissionToSitRequestCancelled())
     end)
    
     common.SubscribeEvent(common.ELocalPlayerLeftSeat(),function()

@@ -79,6 +79,7 @@ function EChooseCustomQuestion() return "ChooseCustomQuestion" end -- void
 function EDateRequestReceived() return "DateRequestReceived" end -- requestingPlayer(Player)
 function ESubmitPermissionToSitVerdict() return "SubmitPermissionToSitVerdict" end -- verdict(Enum Verdict)
 function EPermissionToSitRefused() return "PermissionToSitRefused" end -- void
+function EPermissionToSitRequestCancelled() return "PermissionToSitRequestCancelled" end -- void
 
 -- Enumerations
 -- Result Status
@@ -100,6 +101,7 @@ function NVerdictAccept() return "VerdictAccept" end
 function NVerdictReject() return "VerdictReject" end
 function NVerdictPlayAgain() return "VerdictPlayAgain" end
 function NVerdictPlayLater() return "VerdictPlayLater" end
+function NVerdictPlayerLeft() return "VerdictPlayerLeft" end
 
 -- Verdict Type
 function NVerdictTypeAcceptance() return "VerdictTypeAcceptance" end
