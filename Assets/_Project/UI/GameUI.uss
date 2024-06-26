@@ -1,6 +1,5 @@
 :root{
-    /* --normal-font: url("project://database/Assets/_Project/Fonts/ARLRDBDSDF.asset");  */
-    --normal-font: url("project://database/Packages/Highrise Studio/Assets/Fonts/FreeSerif SDF.asset"); 
+    --normal-font: url("project://database/Assets/_Project/Fonts/ARLRDBDSDF.asset"); 
 }
 
 .game-u-i {
