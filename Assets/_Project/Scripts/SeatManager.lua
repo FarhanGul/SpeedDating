@@ -2,6 +2,7 @@
 
 -- Require
 local common = require("Common")
+local ranking = require("Ranking")
 
 -- Events
 local e_sendPlayerLeftSeatToServer = Event.new("sendPlayerLeftSeatToServer")
@@ -41,10 +42,22 @@ function Seats()
             if(_newOccupant ~= nil and self:GetPartnerSeatId(_id) ~= nil and self._table[self:GetPartnerSeatId(_id)].occupant ~= nil ) then
                 -- Both players are seated begin date
                 local otherOccupant = self._table[self:GetPartnerSeatId(_id)].occupant
-                local firstTurn = math.random(1,2)
-                e_sendBeginDateToClient:FireClient(_newOccupant,_newOccupant,otherOccupant,firstTurn == 1)
-                e_sendBeginDateToClient:FireClient(otherOccupant,otherOccupant,_newOccupant,firstTurn == 2)
+                self:BeginDate(_newOccupant,otherOccupant)
+
             end
+        end,
+        BeginDate = function(self,p1,p2)
+            local pairId = ranking.GetUniquePairIdentifier(p1.name,p2.name)
+            local arePlayersPlayingForTheFirstTime = false
+            -- Fetch Partner History
+            ranking.FetchPartnerHistoryFromStorage(function(partnerHistory)
+                if(not table.find(partnerHistory,pairId)) then
+                    arePlayersPlayingForTheFirstTime = true
+                end
+                local firstTurn = math.random(1,2)
+                e_sendBeginDateToClient:FireClient(p1,p1,p2,firstTurn == 1,arePlayersPlayingForTheFirstTime)
+                e_sendBeginDateToClient:FireClient(p2,p2,p1,firstTurn == 2,arePlayersPlayingForTheFirstTime)
+            end)
         end,
         HandleServerPlayerLeft = function(self,playerWhoLeft)
             -- Check if they were waiting for permission if so send a cancel request
@@ -171,9 +184,9 @@ function self:ClientAwake()
         common.InvokeEvent(common.EUpdateSeatOccupant(),seats)
     end)
 
-    e_sendBeginDateToClient:Connect(function(you, partner,isYourTurnFirst)
+    e_sendBeginDateToClient:Connect(function(you, partner,isYourTurnFirst,isNewParter)
         if(you == client.localPlayer) then
-            common.InvokeEvent(common.EBeginDate(),you,partner,isYourTurnFirst)
+            common.InvokeEvent(common.EBeginDate(),you,partner,isYourTurnFirst,isNewParter)
         end
     end)
 

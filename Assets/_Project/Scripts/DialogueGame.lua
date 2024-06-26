@@ -11,6 +11,7 @@ local partnerVerdict
 local myVerdict
 local verdictType
 local isOpeningQuestion
+local arePlayersPlayingForTheFirstTime
 
 -- Events
 local e_sendPlayerQuestionToServer = Event.new("sendPlayerQuestionToServer")
@@ -56,6 +57,7 @@ function BeginGame(args)
     partner = args[2]
     isOpeningQuestion = true
     isMyTurnToQuestion = args[3]
+    arePlayersPlayingForTheFirstTime = args[4]
     Timer.new(2.5,function() 
         if(partner ~= nil) then StartTurn() end
     end,false)
@@ -64,7 +66,7 @@ end
 function StartTurn()
     local randomQuestions = nil
     if(isMyTurnToQuestion) then
-        randomQuestions = GetRandomQuestions(isOpeningQuestion and common.NQuestionTypeOpening() or common.NQuestionTypeDefault())
+        randomQuestions = GetRandomQuestions( (isOpeningQuestion and arePlayersPlayingForTheFirstTime) and common.NQuestionTypeOpening() or common.NQuestionTypeDefault())
     end
     isOpeningQuestion = false
     common.InvokeEvent(common.ETurnStarted(),isMyTurnToQuestion,randomQuestions)

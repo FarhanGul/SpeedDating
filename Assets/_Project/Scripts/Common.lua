@@ -64,7 +64,7 @@ end
 -- Events
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
-function EBeginDate() return "BeginDate" end -- you(Player) , partner(Player) , isYourTurnFirst(Bool)
+function EBeginDate() return "BeginDate" end -- you(Player) , partner(Player) , isYourTurnFirst(Bool) , arePlayersPlayingForTheFirstTime(Bool)
 function EEndDate() return "EndDate" end -- void
 function EPrivateMessageSent() return "PrivateMessageSent" end -- from(Player) , message(string)
 function ETurnStarted() return "TurnStarted" end -- isMyTurn(Bool)
@@ -120,7 +120,7 @@ function CRelationshipIdDelimiter() return "," end
 function CUseProductionStorage() return false end
 function CEnableDevCommands() return true end
 function CEnableUIDebugging() return false end
-function CEnableQuickGame() return false end
+function CEnableQuickGame() return true end
 
 -- Storage Keys
 function KDatingLeaderboard() return CUseProductionStorage() and "DatingLeaderboard" or "_DatingLeaderboard" end
