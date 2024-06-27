@@ -1,6 +1,9 @@
 --!Type(Module)
 local events = {}
 
+-- Third Party Dependencies
+-- POLYGON Nightclubs - Low Poly 3D Art by Synty 1.7.0
+
 -- Functions
 function self:ClientAwake()
     if(client.localPlayer.name == "FarhanGulDev") then
