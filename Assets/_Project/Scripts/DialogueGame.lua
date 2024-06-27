@@ -4,6 +4,7 @@ local common = require("Common")
 local ranking = require("Ranking")
 local data = require("Data")
 
+-- Private
 local partner
 local isMyTurnToQuestion
 local waitingForAnswer = false
@@ -39,6 +40,7 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EBeginDate(),BeginGame)
     common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),HandlePlayerSelectedQuestion)
     common.SubscribeEvent(common.EPrivateMessageSent(),HandlePrivateMessageSent)
+
     e_sendPlayerQuestionToClient:Connect(function(question,sendOnChat)
         waitingForAnswer = true
         common.InvokeEvent(common.EPlayerReceivedQuestionFromServer(),question,sendOnChat)

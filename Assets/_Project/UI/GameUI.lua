@@ -45,7 +45,7 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EPermissionToSitRefused(),ShowPermissionToSitRefused)
     common.SubscribeEvent(common.ETryToOccupySeat(),ShowAskingForPermission)
     common.SubscribeEvent(common.EPermissionToSitRequestCancelled(),ShowSittingAlone)
-    if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowHome() end
+    if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowTutorial() end
 end
 
 function ShowAskingForPermission(args)
@@ -338,9 +338,22 @@ function ShowHome()
     root:Clear()
     local panel = VisualElement.new()
     panel:Add(CreateLabel("Welcome to speed dating!",FontSize.heading,Colors.white))
-    panel:Add(CreateLabel("Sit at a table to begin your date",FontSize.normal,Colors.lightGrey))
+    panel:Add(CreateLabel("Sit at a bar stool to begin your date",FontSize.normal,Colors.lightGrey))
     panel:Add(CreateButton("Ranking",ShowRanking ,Colors.blue))
     root:Add(panel)
+end
+
+function ShowTutorial()
+    local panel = RenderFullScreenPanel()
+    panel:Add(CreateLabel("How to play",FontSize.heading,Colors.white))
+    panel:Add(CreateLabel("Sit at a bar stool to begin your date. Keep the conversation flowing, our curated list of questions are there to spark your creativity",FontSize.normal,Colors.lightGrey))
+    panel:Add(CreateLabel("Tips for a great date",FontSize.heading,Colors.white))
+    panel:Add(CreateLabel("Show genuine interest in your date by asking questions and listening to their answers. Authenticity is attractive, share your true thoughts and feelings",FontSize.normal,Colors.lightGrey))
+    panel:Add(CreateLabel("Safety & Respect",FontSize.heading,Colors.white))
+    panel:Add(CreateLabel("Always be respectful and considerate. Everyone deserves a safe and comfortable experience.",FontSize.normal,Colors.lightGrey))
+    panel:Add(CreateLabel("Ranking",FontSize.heading,Colors.white))
+    panel:Add(CreateLabel("Challenge yourself to reach the top of the dating and relationship leaderboards by meeting new partners or nurturing your existing relationships.",FontSize.normal,Colors.lightGrey))
+    panel:Add(CreateButton("Continue",ShowHome,Colors.blue))
 end
 
 function ShowRanking()

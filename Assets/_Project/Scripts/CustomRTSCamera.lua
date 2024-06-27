@@ -46,6 +46,7 @@ local offset = Vector3.zero                      -- the offset from the Target
 local originalTarget = Vector3.zero
 
 local localCharacterInstantiatedEvent = nil
+
 if centerOnCharacterWhenSpawned then
     localCharacterInstantiatedEvent = client.localPlayer.CharacterChanged:Connect(function(player, character)
         if character then

@@ -25,6 +25,3 @@ MonoBehaviour:
   - Name: Room
     Scene: {fileID: 102900000, guid: 62f6f6d61f5763b4f90ed389cb5a6318, type: 3}
     LoadingImage: {fileID: 0}
-  - Name: Room
-    Scene: {fileID: 102900000, guid: 3d97b014f52721147ba461f2a8133078, type: 3}
-    LoadingImage: {fileID: 0}
