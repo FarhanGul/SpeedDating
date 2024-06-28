@@ -22,8 +22,10 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EUpdateSeatOccupant(),HandleUpdateSeatOccupant)
     common.SubscribeEvent(common.EPermissionToSitRefused(),HandlePermissionToSitRefused)
     tapHandler.Tapped:Connect(function()
-        common.InvokeEvent(common.ETryToOccupySeat(),id)
-        characterController.options.enabled = false
+        if(characterController.options.enabled)then
+            common.InvokeEvent(common.ETryToOccupySeat(),id)
+            characterController.options.enabled = false
+        end
     end)
     SetAvailability(true)
 end

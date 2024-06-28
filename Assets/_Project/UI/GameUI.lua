@@ -63,9 +63,11 @@ function ShowPermissionToSitRefused(args)
         root:Clear()
         local panel = VisualElement.new()
         if(verdict == common.NVerdictReject()) then
-            panel:Add(CreateLabel("Your partner is not interested, try another table",FontSize.heading))
+            panel:Add(CreateLabel("Your partner is not interested",FontSize.heading,Colors.white))
+            panel:Add(CreateLabel("Please try another table",FontSize.normal,Colors.lightGrey))
         else
-            panel:Add(CreateLabel("Reqeust cancelled, your partner left the world",FontSize.heading))
+            panel:Add(CreateLabel("Reqeust cancelled",FontSize.heading,Colors.white))
+            panel:Add(CreateLabel("Your partner left the world",FontSize.normal,Colors.lightGrey))
         end
         root:Add(panel)
         Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
