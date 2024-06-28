@@ -9,47 +9,48 @@ local contact
 local id
 local currentOccupant
 local outline : GameObject
-local canBeOccupied
-local isSeatingFunctionalityEnabled = true
-local isTryingToOccupySeat
+local tapHandler : TapHandler
+local collider : Collider
 
 -- Functions
 function self:ClientAwake()
+    collider = self.gameObject:GetComponent(Collider)
+    tapHandler = self.gameObject:GetComponent(TapHandler)
     currentOccupant = nil
     id = self.transform:GetSiblingIndex() + 1
     outline = self.transform:Find("Outline").gameObject
     common.SubscribeEvent(common.EUpdateSeatOccupant(),HandleUpdateSeatOccupant)
     common.SubscribeEvent(common.EPermissionToSitRefused(),HandlePermissionToSitRefused)
-    self.gameObject:GetComponent(TapHandler).Tapped:Connect(function()
-        if(canBeOccupied and isSeatingFunctionalityEnabled) then 
-            isTryingToOccupySeat = true
-            common.InvokeEvent(common.ETryToOccupySeat(),id)
-            characterController.options.enabled = false
-        end
+    tapHandler.Tapped:Connect(function()
+        common.InvokeEvent(common.ETryToOccupySeat(),id)
+        characterController.options.enabled = false
     end)
     SetAvailability(true)
 end
 
 function HandlePermissionToSitRefused(args)
-    characterController.options.enabled = true
-    isSeatingFunctionalityEnabled = false
-    if(isTryingToOccupySeat) then client.localPlayer.character:MoveTo(self.transform:Find("Exit").position) end
-    Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), function()
-        isSeatingFunctionalityEnabled = true
-    end, false)
-    isTryingToOccupySeat = false
+    if(id == args[1]) then
+        local rejectedPlayer = args[2]
+        if(rejectedPlayer == client.localPlayer) then 
+            characterController.options.enabled = true
+            tapHandler.enabled = false
+            Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), function()
+                tapHandler.enabled = true
+            end, false)
+        end
+        rejectedPlayer.character:MoveTo(self.transform:Find("Exit").position)
+        SetAvailability(true)
+    end
 end
 
 function HandleUpdateSeatOccupant(args)
     local newData = args[1]:GetData()[id]
     if(newData ~= nil) then
-        -- Handle waiting for permission
-        if(newData.occupant == nil) then
-            SetAvailability(not newData.waitingForPermission)
-        end
-
-        -- Update occupants
-        if ( currentOccupant ~= newData.occupant) then
+        if(newData.occupant == nil and newData.waitingForPermission) then
+            -- Handle waiting for permission
+            SetAvailability(false)
+        elseif ( currentOccupant ~= newData.occupant) then
+            -- Update occupants
             if(currentOccupant == nil and newData.occupant ~= nil) then
                 OccupySeat(newData.occupant)
             elseif(currentOccupant ~= nil and newData.occupant == nil ) then
@@ -65,7 +66,6 @@ function OccupySeat(player)
     if(player == client.localPlayer) then
         common.InvokeEvent(common.ELocalPlayerOccupiedSeat())
     end
-    isTryingToOccupySeat = false
 end
 
 function LeaveSeat(player)
@@ -81,6 +81,6 @@ function LeaveSeat(player)
 end
 
 function SetAvailability(isAvailable)
-    canBeOccupied = isAvailable
-    outline:SetActive(isAvailable)
+    collider.enabled = isAvailable
+    outline:SetActive(not isAvailable)
 end

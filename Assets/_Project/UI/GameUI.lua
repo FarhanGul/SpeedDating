@@ -52,21 +52,24 @@ function ShowAskingForPermission(args)
     root:Clear()
     local panel = VisualElement.new()
     panel:Add(CreateLabel("Please wait",FontSize.heading))
-    panel:Add(CreateLabel("Asking for permission to sit",FontSize.normal,Colors.lightGrey))
+    panel:Add(CreateLabel("Asking for permission",FontSize.normal,Colors.lightGrey))
     root:Add(panel)
 end
 
 function ShowPermissionToSitRefused(args)
-    local verdict = args[1]
-    root:Clear()
-    local panel = VisualElement.new()
-    if(verdict == common.NVerdictReject()) then
-        panel:Add(CreateLabel("Your partner is not interested, try another table",FontSize.heading))
-    else
-        panel:Add(CreateLabel("Reqeust cancelled, your partner left the world",FontSize.heading))
+    local rejectedPlayer = args[2]
+    local verdict = args[3]
+    if(rejectedPlayer == client.localPlayer) then
+        root:Clear()
+        local panel = VisualElement.new()
+        if(verdict == common.NVerdictReject()) then
+            panel:Add(CreateLabel("Your partner is not interested, try another table",FontSize.heading))
+        else
+            panel:Add(CreateLabel("Reqeust cancelled, your partner left the world",FontSize.heading))
+        end
+        root:Add(panel)
+        Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
     end
-    root:Add(panel)
-    Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
 end
 
 function ShowDateRequestReceived(args)

@@ -81,7 +81,7 @@ function ESubmitVerdict() return "SubmitVerdict" end -- verdict(Enum Verdict)
 function EChooseCustomQuestion() return "ChooseCustomQuestion" end -- void
 function EDateRequestReceived() return "DateRequestReceived" end -- requestingPlayer(Player)
 function ESubmitPermissionToSitVerdict() return "SubmitPermissionToSitVerdict" end -- verdict(Enum Verdict)
-function EPermissionToSitRefused() return "PermissionToSitRefused" end -- void
+function EPermissionToSitRefused() return "PermissionToSitRefused" end -- seatId (number), rejectedPlayer (Player), verdict (Enum Verdict)
 function EPermissionToSitRequestCancelled() return "PermissionToSitRequestCancelled" end -- void
 
 -- Enumerations

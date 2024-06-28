@@ -74,7 +74,7 @@ function Seats()
                 local partnerSeat = self:GetPartnerSeat(playerWhoLeft)
                 -- Check if they were supposed to respond to a permission request 
                 if(partnerSeat.waitingForPermission ~= nil) then
-                    e_sendPermissionToSitRefusedToClient:FireClient(partnerSeat.waitingForPermission,common.NVerdictPlayerLeft())
+                    e_sendPermissionToSitRefusedToClient:FireClients(partnerSeat.id,partnerSeat.waitingForPermission,common.NVerdictPlayerLeft())
                     seats:UpdateSeat(partnerSeat.id,nil,nil)
                 end
                 seats:UpdateSeat(seat.id,nil,nil)
@@ -170,7 +170,7 @@ function self:ServerAwake()
         if(verdict == common.NVerdictAccept()) then
             seats:UpdateSeatAndNotifyAllClients(waitingPlayerSeatId, playerWaitingToSit, nil)
         else
-            e_sendPermissionToSitRefusedToClient:FireClient(playerWaitingToSit,common.NVerdictReject())
+            e_sendPermissionToSitRefusedToClient:FireAllClients(waitingPlayerSeatId,playerWaitingToSit,common.NVerdictReject())
             seats:UpdateSeatAndNotifyAllClients(waitingPlayerSeatId, nil, nil)
         end
     end)
@@ -194,8 +194,8 @@ function self:ClientAwake()
         common.InvokeEvent(common.EDateRequestReceived(),requestingPlayer)
     end)
 
-    e_sendPermissionToSitRefusedToClient:Connect(function(verdict)
-        common.InvokeEvent(common.EPermissionToSitRefused(),verdict)
+    e_sendPermissionToSitRefusedToClient:Connect(function(seatId,rejectedPlayer,verdict)
+        common.InvokeEvent(common.EPermissionToSitRefused(),seatId,rejectedPlayer,verdict)
     end)
 
     e_sendPermissionToSitRequestCancelledToClient:Connect(function()
