@@ -321,7 +321,7 @@ function CreateChatMessage(player,message)
     local panel = VisualElement.new()
     local accentColor = player == client.localPlayer and "#0DA6FC" or "#CCCADC"
     panel:AddToClassList("HorizontalLayout")
-    local richText = "<color="..accentColor..">"..player.name..": <color=#7D7C88>"..message.."</color>"
+    local richText = "<color="..accentColor..">"..player.name..":</color> <color=#7D7C88> "..common.ReplaceEmojiCodes(message).." </color>"
     local label = CreateLabel(richText,FontSize.normal,Colors.white)
     label:AddToClassList("LeftTextAlign")
     panel:Add(label)
@@ -350,7 +350,7 @@ end
 function ShowTutorial()
     local panel = RenderFullScreenPanel()
     panel:AddToClassList("VerticalLayout")
-    panel:Add(CreateLabel("😆🎉🎂",FontSize.heading,Colors.white))
+    panel:Add(CreateLabel("😆🎉🎂\u{1F60A}",FontSize.heading,Colors.white))
     panel:Add(CreateLabel("Welcome to speed dating!",FontSize.heading,Colors.white))
     local categoryBlock = VisualElement.new()
     categoryBlock:Add(CreateLabel("How to play",FontSize.normal,Colors.white))
@@ -505,7 +505,7 @@ function CreateLabel(...)
     local fontSize = args[2] == nil and FontSize.normal or args[2]
     local color = args[3] == nil and Colors.white or args[3]
     local label = UILabel.new()
-    label:SetPrelocalizedText(text, false)
+    label:SetEmojiPrelocalizedText(text, false)
     label.style.color = StyleColor.new(color)
     label.style.fontSize = StyleLength.new(Length.new(fontSize))
     label:AddToClassList("DefaultLabel")

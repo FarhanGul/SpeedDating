@@ -64,6 +64,18 @@ function GetRandomExcluding(from, to, exclude)
     return rand
 end
 
+function ReplaceEmojiCodes(inputString)
+    -- Define the pattern to match 'u' followed by one or more hexadecimal digits
+    local pattern = "u(%x+)"
+
+    -- Use gsub to replace the matched pattern
+    local result = string.gsub(inputString, pattern, function(code)
+        return "\\u{" .. code .. "}"
+    end)
+
+    return result
+end
+
 -- Events
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
