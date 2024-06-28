@@ -350,6 +350,7 @@ end
 function ShowTutorial()
     local panel = RenderFullScreenPanel()
     panel:AddToClassList("VerticalLayout")
+    panel:Add(CreateLabel("😆🎉🎂",FontSize.heading,Colors.white))
     panel:Add(CreateLabel("Welcome to speed dating!",FontSize.heading,Colors.white))
     local categoryBlock = VisualElement.new()
     categoryBlock:Add(CreateLabel("How to play",FontSize.normal,Colors.white))

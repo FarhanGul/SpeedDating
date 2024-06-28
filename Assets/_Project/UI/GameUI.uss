@@ -1,5 +1,6 @@
 :root{
-    --normal-font: url("project://database/Assets/_Project/Fonts/ARLRDBDSDF.asset"); 
+    /* --normal-font: url("project://database/Assets/_Project/Fonts/ARLRDBDSDF.asset");  */
+    --normal-font: url("project://database/Packages/Highrise Studio/Assets/Fonts/MuseoSansRounded-500 SDF.asset"); 
 }
 
 .game-u-i {
@@ -53,7 +54,7 @@
     margin:2px;
     width: auto;
     height: auto;
-    -unity-font-definition: var(--normal-font);
+    /* -unity-font-definition: var(--normal-font); */
 }
 
 .Grow{
