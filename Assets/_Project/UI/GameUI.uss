@@ -120,3 +120,7 @@
     flex-direction: column;
     justify-content: space-between;
 }
+
+.JustifyCenter{
+    justify-content: center;
+}
