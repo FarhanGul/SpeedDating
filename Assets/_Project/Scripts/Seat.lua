@@ -47,11 +47,13 @@ end
 function HandlePermissionToSitRefused(args)
     if(id == args[1]) then
         local rejectedPlayer = args[2]
-        Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), function()
-            if(rejectedPlayer == client.localPlayer) then characterController.options.enabled = true end
-            rejectedPlayer.character:MoveTo(self.transform:Find("Exit").position)
-            SetAvailability(true)
-        end, false)
+        if(args[3] ~= common.NVerdictPlayerLeft() ) then
+            Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), function()
+                if(rejectedPlayer == client.localPlayer) then characterController.options.enabled = true end
+                rejectedPlayer.character:MoveTo(self.transform:Find("Exit").position)
+                SetAvailability(true)
+            end, false)
+        end
     end
 end
 
