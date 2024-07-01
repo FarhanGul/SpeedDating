@@ -294,6 +294,7 @@ function ShowGameTurn(args)
     else
         gamePanel:Add(CreateLabel("Waiting For Question...",FontSize.heading,Colors.white))
     end
+    ScrollChatToEnd()
 end
 
 function ShowDialgoueGameIntro(args)
@@ -312,6 +313,12 @@ function HandlePrivateMessage(args)
             return
         end
         chatPanel:Add(CreateChatMessage(args[1], args[2]))
+        ScrollChatToEnd()
+    end
+end
+
+function ScrollChatToEnd()
+    if(chatPanel ~= nil) then
         chatPanel:AdjustScrollOffsetForNewContent()
         chatPanel:ScrollToEnd()
     end
