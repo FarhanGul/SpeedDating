@@ -1,9 +1,6 @@
 --!Type(Module)
 local events = {}
 
--- Third Party Dependencies
--- POLYGON Nightclubs - Low Poly 3D Art by Synty 1.7.0
-
 -- Functions
 function self:ClientAwake()
     if(client.localPlayer.name == "FarhanGulDev") then
@@ -96,6 +93,7 @@ function EDateRequestReceived() return "DateRequestReceived" end -- requestingPl
 function ESubmitPermissionToSitVerdict() return "SubmitPermissionToSitVerdict" end -- verdict(Enum Verdict)
 function EPermissionToSitRefused() return "PermissionToSitRefused" end -- seatId (number), rejectedPlayer (Player), verdict (Enum Verdict)
 function EPermissionToSitRequestCancelled() return "PermissionToSitRequestCancelled" end -- void
+function ECancelPermissionToSitRequest() return "CancelPermissionToSitRequest" end -- void
 
 -- Enumerations
 -- Result Status

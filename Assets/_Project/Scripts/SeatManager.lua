@@ -8,6 +8,7 @@ local ranking = require("Ranking")
 local e_sendPlayerLeftSeatToServer = Event.new("sendPlayerLeftSeatToServer")
 local e_sendPlayerAskingPermissionToSitToServer = Event.new("sendPlayerAskingPermissionToSitToServer")
 local e_sendPlayerAskingPermissionToSitToClient = Event.new("sendPlayerAskingPermissionToSitToClient")
+local e_sendPermissionToSitRequestCancelledToServer = Event.new("sendPermissionToSitRequestCancelledToServer")
 local e_sendPermissionToSitRequestCancelledToClient = Event.new("sendPermissionToSitRequestCancelledToClient")
 local e_sendPermissionToSitVerdictToServer = Event.new("sendPermissionToSitVerdictToServer")
 local e_sendPermissionToSitRefusedToClient = Event.new("sendPermissionToSitRefusedToClient")
@@ -68,13 +69,13 @@ function Seats()
                     self:UpdateSeatAndNotifyAllClients(v.id,nil,nil)
                 end
             end
-            local seat = self:GetSeat(playerWhoLeft)
+            local seat = self:GetOccupiedSeat(playerWhoLeft)
             if(seat ~= nil) then
                 -- If player was seated
                 local partnerSeat = self:GetPartnerSeat(playerWhoLeft)
                 -- Check if they were supposed to respond to a permission request 
                 if(partnerSeat.waitingForPermission ~= nil) then
-                    e_sendPermissionToSitRefusedToClient:FireClients(partnerSeat.id,partnerSeat.waitingForPermission,common.NVerdictPlayerLeft())
+                    e_sendPermissionToSitRefusedToClient:FireAllClients(partnerSeat.id,partnerSeat.waitingForPermission,common.NVerdictPlayerLeft())
                     seats:UpdateSeat(partnerSeat.id,nil,nil)
                 end
                 seats:UpdateSeat(seat.id,nil,nil)
@@ -92,16 +93,24 @@ function Seats()
             return self._table[partnerId] ~= nil and self._table[partnerId].occupant or nil
         end,
         GetPartnerSeat = function(self,player)
-            local seat = self:GetSeat(player)
+            local seat = self:GetOccupiedSeat(player)
             if(seat ~= nil ) then
-                local partnerId = self:GetPartnerSeatId(self:GetSeat(player).id)
+                local partnerId = self:GetPartnerSeatId(self:GetOccupiedSeat(player).id)
                 return self._table[partnerId] ~= nil and self._table[partnerId] or nil
+            end
+            return nil
+        end,
+        GetOccupiedSeat = function(self,player)
+            for k , v in pairs(self._table) do
+                if ( v.occupant == player ) then
+                    return v
+                end
             end
             return nil
         end,
         GetSeat = function(self,player)
             for k , v in pairs(self._table) do
-                if ( v.occupant == player ) then
+                if ( v.occupant == player or v.waitingForPermission == player ) then
                     return v
                 end
             end
@@ -142,6 +151,14 @@ function self:ServerAwake()
 
     server.PlayerDisconnected:Connect(function(player)
         seats:HandleServerPlayerLeft(player)
+    end)
+
+    e_sendPermissionToSitRequestCancelledToServer:Connect(function(player)
+        local playerWhoLeftSeat = seats:GetSeat(player)
+        local seatedPlayer = seats:GetData()[seats:GetPartnerSeatId(playerWhoLeftSeat.id)].occupant
+        e_sendPermissionToSitRequestCancelledToClient:FireClient(seatedPlayer)
+        seats:UpdateSeatAndNotifyAllClients(playerWhoLeftSeat.id,nil,nil)
+        e_sendPermissionToSitRefusedToClient:FireAllClients(playerWhoLeftSeat.id,playerWhoLeftSeat.waitingForPermission,common.NVerdictPlayLater())
     end)
 
     e_requestSeatsFromServer:Connect(function(player)
@@ -212,6 +229,10 @@ function self:ClientAwake()
 
     common.SubscribeEvent(common.ESubmitPermissionToSitVerdict(),function(args)
         e_sendPermissionToSitVerdictToServer:FireServer(args[1])
+    end)
+
+    common.SubscribeEvent(common.ECancelPermissionToSitRequest(),function(args)
+        e_sendPermissionToSitRequestCancelledToServer:FireServer()
     end)
 
     e_requestSeatsFromServer:FireServer()

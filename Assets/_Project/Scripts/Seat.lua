@@ -24,6 +24,7 @@ function self:ClientAwake()
     tapHandler.Tapped:Connect(function()
         if(characterController.options.enabled)then
             common.InvokeEvent(common.ETryToOccupySeat(),id)
+
             characterController.options.enabled = false
         end
     end)
