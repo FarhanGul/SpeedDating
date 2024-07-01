@@ -12,6 +12,7 @@ local outline : GameObject
 local collider : Collider
 local anchor : Anchor
 local isAnchorTaken
+local isAvailable
 
 -- Functions
 function self:ClientAwake()
@@ -31,6 +32,7 @@ function self:ClientAwake()
     end)
     anchor.Exited:Connect(function()
         isAnchorTaken = false
+        SetAvailability(isAvailable)
     end)
     SetAvailability(true)
 end
@@ -92,7 +94,8 @@ function LeaveSeat(player)
     end,false)
 end
 
-function SetAvailability(isAvailable)
+function SetAvailability(_isAvailable)
+    isAvailable = _isAvailable
     local enabled = isAvailable and not isAnchorTaken
     collider.enabled = enabled
     outline:SetActive(not enabled)
