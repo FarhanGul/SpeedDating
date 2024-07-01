@@ -52,9 +52,11 @@ function HandlePermissionToSitRefused(args)
     if(id == args[1]) then
         local rejectedPlayer = args[2]
         Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), function()
-            if(rejectedPlayer == client.localPlayer) then characterController.options.enabled = true end
-            rejectedPlayer.character:MoveTo(self.transform:Find("Exit").position)
-            SetAvailability(true)
+            if(rejectedPlayer ~= nil) then
+                if(rejectedPlayer == client.localPlayer) then characterController.options.enabled = true end
+                rejectedPlayer.character:MoveTo(self.transform:Find("Exit").position)
+                SetAvailability(true)
+            end
         end, false)
     end
 end
