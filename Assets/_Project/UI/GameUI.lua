@@ -76,15 +76,14 @@ function ShowPermissionToSitRefused(args)
             panel:Add(CreateLabel("Your partner is not interested",FontSize.heading,Colors.white))
             panel:Add(CreateLabel("Please try another table",FontSize.normal,Colors.lightGrey))
         elseif(verdict == common.NVerdictPlayerLeft()) then
-            ShowSittingAlone()
+            panel:Add(CreateLabel("Request cancelled",FontSize.heading,Colors.white))
+            panel:Add(CreateLabel("Your partner left the world",FontSize.normal,Colors.lightGrey))
         elseif(verdict == common.NVerdictPlayLater()) then
-            panel:Add(CreateLabel("Reqeust cancelled",FontSize.heading,Colors.white))
+            panel:Add(CreateLabel("Request cancelled",FontSize.heading,Colors.white))
             panel:Add(CreateLabel("You cancelled your request",FontSize.normal,Colors.lightGrey))
         end
         root:Add(panel)
-        if(verdict ~= common.NVerdictPlayerLeft()) then
-            Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
-        end
+        Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
     end
 end
 
