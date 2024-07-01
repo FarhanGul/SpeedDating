@@ -9,40 +9,47 @@ local contact
 local id
 local currentOccupant
 local outline : GameObject
-local tapHandler : TapHandler
 local collider : Collider
+local anchor : Anchor
+local isAnchorTaken
 
 -- Functions
 function self:ClientAwake()
     collider = self.gameObject:GetComponent(Collider)
-    tapHandler = self.gameObject:GetComponent(TapHandler)
+    anchor = self.transform:Find("Anchor"):GetComponent(Anchor)
     currentOccupant = nil
     id = self.transform:GetSiblingIndex() + 1
     outline = self.transform:Find("Outline").gameObject
     common.SubscribeEvent(common.EUpdateSeatOccupant(),HandleUpdateSeatOccupant)
     common.SubscribeEvent(common.EPermissionToSitRefused(),HandlePermissionToSitRefused)
-    tapHandler.Tapped:Connect(function()
+    common.SubscribeEvent(common.ECanPlayerOccupySeatVerdictReceived(),HandleCanPlayerOccupySeatVerdict)
+    anchor.Entered:Connect(function()
+        isAnchorTaken = true
         if(characterController.options.enabled)then
             common.InvokeEvent(common.ETryToOccupySeat(),id)
-
-            characterController.options.enabled = false
         end
     end)
+    anchor.Exited:Connect(function()
+        isAnchorTaken = false
+    end)
     SetAvailability(true)
+end
+
+function HandleCanPlayerOccupySeatVerdict(args)
+    -- seatId ( number ) , canOccupy ( boolean ) , canSitWithoutPermission ( boolean )
+    if(id == args[1])then
+        if(args[2]) then characterController.options.enabled = false end
+    end
 end
 
 function HandlePermissionToSitRefused(args)
     if(id == args[1]) then
         local rejectedPlayer = args[2]
-        if(rejectedPlayer == client.localPlayer) then 
-            characterController.options.enabled = true
-            tapHandler.enabled = false
-            Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), function()
-                tapHandler.enabled = true
-            end, false)
-        end
-        rejectedPlayer.character:MoveTo(self.transform:Find("Exit").position)
-        SetAvailability(true)
+        Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), function()
+            if(rejectedPlayer == client.localPlayer) then characterController.options.enabled = true end
+            rejectedPlayer.character:MoveTo(self.transform:Find("Exit").position)
+            SetAvailability(true)
+        end, false)
     end
 end
 
@@ -86,6 +93,7 @@ function LeaveSeat(player)
 end
 
 function SetAvailability(isAvailable)
-    collider.enabled = isAvailable
-    outline:SetActive(not isAvailable)
+    local enabled = isAvailable and not isAnchorTaken
+    collider.enabled = enabled
+    outline:SetActive(not enabled)
 end

@@ -94,6 +94,7 @@ function ESubmitPermissionToSitVerdict() return "SubmitPermissionToSitVerdict" e
 function EPermissionToSitRefused() return "PermissionToSitRefused" end -- seatId (number), rejectedPlayer (Player), verdict (Enum Verdict)
 function EPermissionToSitRequestCancelled() return "PermissionToSitRequestCancelled" end -- void
 function ECancelPermissionToSitRequest() return "CancelPermissionToSitRequest" end -- void
+function ECanPlayerOccupySeatVerdictReceived() return "CanPlayerOccupySeatVerdictReceived" end -- seatId ( number ) , canOccupy ( boolean ) , canSitWithoutPermission ( boolean )
 
 -- Enumerations
 -- Result Status

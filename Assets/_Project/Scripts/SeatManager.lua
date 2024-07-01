@@ -5,8 +5,9 @@ local common = require("Common")
 local ranking = require("Ranking")
 
 -- Events
+local e_sendPlayerWantsToOccupySeat = Event.new("sendPlayerWantsToOccupySeat")
+local e_sendCanPlayerOccupySeatVerdictToClient = Event.new("sendCanPlayerOccupySeatVerdictToClient")
 local e_sendPlayerLeftSeatToServer = Event.new("sendPlayerLeftSeatToServer")
-local e_sendPlayerAskingPermissionToSitToServer = Event.new("sendPlayerAskingPermissionToSitToServer")
 local e_sendPlayerAskingPermissionToSitToClient = Event.new("sendPlayerAskingPermissionToSitToClient")
 local e_sendPermissionToSitRequestCancelledToServer = Event.new("sendPermissionToSitRequestCancelledToServer")
 local e_sendPermissionToSitRequestCancelledToClient = Event.new("sendPermissionToSitRequestCancelledToClient")
@@ -128,10 +129,21 @@ function Seats()
         HandleClientLeftSeat = function(self,id)
             e_sendPlayerLeftSeatToServer:FireServer(id)
         end,
-        HandleClientWantsToOccupySeat = function(self,id)
+        HandleClientWantsToOccupySeat = function(self,player,id)
             -- Check if seat is not already occupied
             if ( self._table[id] == nil or (self._table[id].occupant == nil and self._table[id].waitingForPermission == nil)) then
-                e_sendPlayerAskingPermissionToSitToServer:FireServer(id)
+                if(seats:AreBothSeatsEmpty(id)) then
+                    -- if both seats are empty let the player sit
+                    seats:UpdateSeatAndNotifyAllClients(id, player, nil)
+                    e_sendCanPlayerOccupySeatVerdictToClient:FireClient(player,id,true,true)
+                else
+                    -- elseif other seat is occupied send the partner a permission request
+                    seats:UpdateSeatAndNotifyAllClients(id, nil, player)
+                    e_sendPlayerAskingPermissionToSitToClient:FireClient(seats:GetPartnerPlayerFromSeatId(id),player)
+                    e_sendCanPlayerOccupySeatVerdictToClient:FireClient(player,id,true,false)
+                end
+            else
+                e_sendCanPlayerOccupySeatVerdictToClient:FireClient(player,id,false,false)
             end
         end,
         GetLocalPlayerSeat = function(self,id)
@@ -169,15 +181,8 @@ function self:ServerAwake()
         seats:UpdateSeatAndNotifyAllClients(id, nil, nil)
     end)
 
-    e_sendPlayerAskingPermissionToSitToServer:Connect(function(player,id)
-        if(seats:AreBothSeatsEmpty(id)) then
-            -- if both seats are empty let the player sit
-            seats:UpdateSeatAndNotifyAllClients(id, player, nil)
-        else
-            -- elseif other seat is occupied send the partner a permission request
-            seats:UpdateSeatAndNotifyAllClients(id, nil, player)
-            e_sendPlayerAskingPermissionToSitToClient:FireClient(seats:GetPartnerPlayerFromSeatId(id),player)
-        end
+    e_sendPlayerWantsToOccupySeat:Connect(function(player,seatId)
+        seats:HandleClientWantsToOccupySeat(player,seatId)
     end)
 
     e_sendPermissionToSitVerdictToServer:Connect(function(player,verdict)
@@ -207,6 +212,10 @@ function self:ClientAwake()
         end
     end)
 
+    e_sendCanPlayerOccupySeatVerdictToClient:Connect(function(seatId, canOccupy,canSitWithoutPermission)
+        common.InvokeEvent(common.ECanPlayerOccupySeatVerdictReceived(),seatId,canOccupy,canSitWithoutPermission)
+    end)
+
     e_sendPlayerAskingPermissionToSitToClient:Connect(function(requestingPlayer)
         common.InvokeEvent(common.EDateRequestReceived(),requestingPlayer)
     end)
@@ -224,7 +233,7 @@ function self:ClientAwake()
     end)
 
     common.SubscribeEvent(common.ETryToOccupySeat(),function(args)
-        seats:HandleClientWantsToOccupySeat(args[1])
+        e_sendPlayerWantsToOccupySeat:FireServer(args[1])
     end)
 
     common.SubscribeEvent(common.ESubmitPermissionToSitVerdict(),function(args)

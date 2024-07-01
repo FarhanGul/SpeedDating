@@ -43,9 +43,16 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EChooseCustomQuestion(),ShowAcceptingCustomQuestion)
     common.SubscribeEvent(common.EDateRequestReceived(),ShowDateRequestReceived)
     common.SubscribeEvent(common.EPermissionToSitRefused(),ShowPermissionToSitRefused)
-    common.SubscribeEvent(common.ETryToOccupySeat(),ShowAskingForPermission)
+    common.SubscribeEvent(common.ECanPlayerOccupySeatVerdictReceived(),HandleCanPlayerOccupySeatVerdictReceived)
     common.SubscribeEvent(common.EPermissionToSitRequestCancelled(),ShowSittingAlone)
     if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowTutorial() end
+end
+
+function HandleCanPlayerOccupySeatVerdictReceived(args)
+    -- seatId ( number ) , canOccupy ( boolean ) , canSitWithoutPermission ( boolean )
+    if(args[2] and not args[3]) then
+        ShowAskingForPermission()
+    end
 end
 
 function ShowAskingForPermission(args)
