@@ -1,4 +1,4 @@
---!Type(ClientAndServer)
+--!Type(Module)
 
 -- Events
 local e_requestServerTime = Event.new("requestServerTime")
@@ -7,6 +7,7 @@ local e_sendServerTimeToClient = Event.new("sendServerTimeToClient")
 -- Private
 local trackLengths
 local audioSources
+local isMuted = false
 
 function self:ServerAwake()
     e_requestServerTime:Connect(function(player)
@@ -68,4 +69,15 @@ function GetTrackAndClipSeek(serverTime)
     end
     -- Fallback (should never be reached if logic is correct)
     return 1, 0
+end
+
+function GetIsMuted()
+    return isMuted
+end
+
+function SetIsMuted(newIsMuted)
+    isMuted = newIsMuted
+    for i = 1, #audioSources do
+        audioSources[i].mute = newIsMuted
+    end
 end

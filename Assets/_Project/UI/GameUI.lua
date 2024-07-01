@@ -2,6 +2,7 @@
 
 local common = require("Common")
 local ranking = require("Ranking")
+local musicManager = require("MusicManager")
 
 --!Bind
 local root : VisualElement = nil
@@ -367,6 +368,17 @@ function ShowHome()
     local panel = VisualElement.new()
     panel:Add(CreateLabel("Take a seat to begin your date",FontSize.heading,Colors.white))
     panel:Add(CreateButton("Ranking",ShowRanking ,Colors.blue))
+    if(musicManager.GetIsMuted()) then
+        panel:Add(CreateButton("Enable Music",function()
+            musicManager.SetIsMuted(false)
+            ShowHome()
+        end ,Colors.blue))
+    else
+        panel:Add(CreateButton("Disable Music",function()
+            musicManager.SetIsMuted(true)
+            ShowHome()
+        end ,Colors.red))
+    end
     root:Add(panel)
 end
 
