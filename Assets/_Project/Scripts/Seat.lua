@@ -24,15 +24,19 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EUpdateSeatOccupant(),HandleUpdateSeatOccupant)
     common.SubscribeEvent(common.EPermissionToSitRefused(),HandlePermissionToSitRefused)
     common.SubscribeEvent(common.ECanPlayerOccupySeatVerdictReceived(),HandleCanPlayerOccupySeatVerdict)
-    anchor.Entered:Connect(function()
-        isAnchorTaken = true
-        if(characterController.options.enabled)then
-            common.InvokeEvent(common.ETryToOccupySeat(),id)
+    anchor.Entered:Connect(function(anchor,character)
+        if(character.player == client.localPlayer) then
+            isAnchorTaken = true
+            if(characterController.options.enabled)then
+                common.InvokeEvent(common.ETryToOccupySeat(),id)
+            end
         end
     end)
-    anchor.Exited:Connect(function()
-        isAnchorTaken = false
-        SetAvailability(isAvailable)
+    anchor.Exited:Connect(function(anchor,character)
+        if(character.player == client.localPlayer) then
+            isAnchorTaken = false
+            SetAvailability(isAvailable)
+        end
     end)
     SetAvailability(true)
 end
