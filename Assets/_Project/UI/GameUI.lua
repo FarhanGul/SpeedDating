@@ -176,6 +176,7 @@ function HandleResultStatusUpdated(args)
             end,false)
         end
     end
+    ScrollChatToEnd()
     if(unintialzie) then UninitializeDialogueGame() end
 end
 
@@ -259,12 +260,13 @@ function ShowQuestionReceived(args)
     gamePanel:Clear()
     gamePanel:Add(CreateLabel("Your turn to answer!",FontSize.heading,Colors.blue))
     gamePanel:Add(CreateLabel(args[1],FontSize.normal,Colors.lightGrey))
+    ScrollChatToEnd()
 end
 
 function ShowQuestionSubmitted(args)
-    HandlePrivateMessage({client.localPlayer,args[1]})
     gamePanel:Clear()
     gamePanel:Add(CreateLabel("Waiting for answer...",FontSize.heading,Colors.white))
+    HandlePrivateMessage({client.localPlayer,args[1]})
 end
 
 function ShowAcceptingCustomQuestion()
@@ -272,6 +274,7 @@ function ShowAcceptingCustomQuestion()
     gamePanel:Add(CreateLabel("Your turn to ask!",FontSize.heading,Colors.blue))
     gamePanel:Add(CreateLabel("Send in a custom question now using the in-game chat",FontSize.normal,Colors.lightGrey))
     waitingForCustomQuestion = true
+    ScrollChatToEnd()
 end
 
 function ShowGameTurn(args)
