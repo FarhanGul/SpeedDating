@@ -59,6 +59,8 @@ function HandleUpdateSeatOccupant(args)
             elseif(currentOccupant ~= nil and newData.occupant == nil ) then
                 LeaveSeat(currentOccupant)
             end
+        elseif(newData.occupant == nil and newData.waitingForPermission == nil) then
+            SetAvailability(true)
         end
     end
 end
