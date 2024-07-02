@@ -200,20 +200,6 @@ end
 
 function self:ClientAwake()
 
-    scene.PlayerJoined:Connect(function(scene, player)
-        player.CharacterChanged:Connect(function(player, character) 
-            if(character.gameObject:GetComponent(TapHandler) == nil) then
-                character.gameObject:AddComponent(TapHandler)
-                local tapHandler : TapHandler = character.gameObject:GetComponent(TapHandler)
-                -- print("Is TapHandler Nil : "..tostring(tapHandler == nil))
-                -- print("Is TapHandler.Tapped Nil : "..tostring(tapHandler.Tapped == nil))
-                tapHandler.Tapped:Connect(function()
-                    print(player.name.." was tapped")
-                end)
-            end
-        end)
-    end)
-
     e_sendSeatsToClient:Connect(function(newSeatsData)
         seats = Seats()
         seats:InitializeWithData(newSeatsData)
