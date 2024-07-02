@@ -33618,7 +33618,7 @@ GameObject:
   - component: {fileID: 874594586}
   - component: {fileID: 874594587}
   m_Layer: 0
-  m_Name: PrivateChat
+  m_Name: ChatSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

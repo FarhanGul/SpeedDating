@@ -16,11 +16,11 @@ using Highrise.Client;
 
 namespace Highrise.Lua.Generated
 {
-    [AddComponentMenu("Lua/PrivateChat")]
+    [AddComponentMenu("Lua/CustomPlayerCharacter")]
     [LuaBehaviourScript(s_scriptGUID)]
-    public class PrivateChat : LuaBehaviourThunk
+    public class CustomPlayerCharacter : LuaBehaviourThunk
     {
-        private const string s_scriptGUID = "8d108b04dccf8ef4c80548fb8eb28571";
+        private const string s_scriptGUID = "73af7a7249aaba943a356b0f3112a404";
         public override string ScriptGUID => s_scriptGUID;
 
 

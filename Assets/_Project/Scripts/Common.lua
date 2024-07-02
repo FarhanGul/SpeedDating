@@ -95,6 +95,7 @@ function EPermissionToSitRefused() return "PermissionToSitRefused" end -- seatId
 function EPermissionToSitRequestCancelled() return "PermissionToSitRequestCancelled" end -- void
 function ECancelPermissionToSitRequest() return "CancelPermissionToSitRequest" end -- void
 function ECanPlayerOccupySeatVerdictReceived() return "CanPlayerOccupySeatVerdictReceived" end -- seatId ( number ) , canOccupy ( boolean ) , canSitWithoutPermission ( boolean )
+function EUpdatePlayerDatingStatus() return "UpdatePlayerDatingStatus" end -- datingStatus ( Enum DatingStatus)
 
 -- Enumerations
 -- Result Status
@@ -122,6 +123,10 @@ function NVerdictTypeAvailability() return "VerdictTypeAvailability" end
 -- Question Type
 function NQuestionTypeDefault() return "QuestionTypeDefault" end
 function NQuestionTypeOpening() return "QuestionTypeOpening" end
+-- Dating Status
+function NDatingStatusFree() return "DatingStatusFree" end
+function NDatingStatusMatchmaking() return "DatingStatusMatchmaking" end
+function NDatingStatusDating() return "DatingStatusMatchmaking" end
 
 -- Duration
 function TSeatAvailabilityCooldown() return 4 end
