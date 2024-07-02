@@ -6,7 +6,6 @@
     xmlns:editor="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
-
   <hr:UILuaView name="root" class="game-u-i" picking-mode="Ignore">
   </hr:UILuaView>
 

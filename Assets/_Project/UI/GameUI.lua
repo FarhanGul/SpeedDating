@@ -3,26 +3,11 @@
 local common = require("Common")
 local ranking = require("Ranking")
 local musicManager = require("MusicManager")
+local ui = require("UILibrary")
 
 --!Bind
 local root : VisualElement = nil
 local waitingForCustomQuestion = false
-
--- Configuration
-local FontSize = {
-    normal = 17,
-    heading = 20
-}
-
-local Colors = {
-    black = Color.new(20/255, 19/255, 23/255),
-    darkGrey = Color.new(40/255, 39/255, 45/255),
-    grey = Color.new(63/255, 62/255, 70/255),
-    blue = Color.new(13/255, 166/255, 252/255),
-    red = Color.new(251/255, 23/255, 105/255),
-    white = Color.new(204/255, 202/255, 220/255),
-    lightGrey = Color.new(125/255,124/255,136/255),
-}
 
 -- Private
 local chatPanel : UIScrollView
@@ -59,11 +44,11 @@ end
 function ShowAskingForPermission(args)
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(CreateLabel("Please wait",FontSize.heading))
-    panel:Add(CreateLabel("Asking for permission",FontSize.normal,Colors.lightGrey))
-    panel:Add(CreateButton("Cancel Request", function()
+    panel:Add(ui.CreateLabel("Please wait",ui.FontSize().heading))
+    panel:Add(ui.CreateLabel("Asking for permission",ui.FontSize().normal,ui.Colors().lightGrey))
+    panel:Add(ui.CreateButton("Cancel Request", function()
         common.InvokeEvent(common.ECancelPermissionToSitRequest())
-    end,Colors.red))
+    end,ui.Colors().red))
     root:Add(panel)
 end
 
@@ -74,14 +59,14 @@ function ShowPermissionToSitRefused(args)
         root:Clear()
         local panel = VisualElement.new()
         if(verdict == common.NVerdictReject()) then
-            panel:Add(CreateLabel("Your partner is not interested",FontSize.heading,Colors.white))
-            panel:Add(CreateLabel("Please try another table",FontSize.normal,Colors.lightGrey))
+            panel:Add(ui.CreateLabel("Your partner is not interested",ui.FontSize().heading,ui.Colors().white))
+            panel:Add(ui.CreateLabel("Please try another table",ui.FontSize().normal,ui.Colors().lightGrey))
         elseif(verdict == common.NVerdictPlayerLeft()) then
-            panel:Add(CreateLabel("Request cancelled",FontSize.heading,Colors.white))
-            panel:Add(CreateLabel("Your partner left the world",FontSize.normal,Colors.lightGrey))
+            panel:Add(ui.CreateLabel("Request cancelled",ui.FontSize().heading,ui.Colors().white))
+            panel:Add(ui.CreateLabel("Your partner left the world",ui.FontSize().normal,ui.Colors().lightGrey))
         elseif(verdict == common.NVerdictPlayLater()) then
-            panel:Add(CreateLabel("Request cancelled",FontSize.heading,Colors.white))
-            panel:Add(CreateLabel("You cancelled your request",FontSize.normal,Colors.lightGrey))
+            panel:Add(ui.CreateLabel("Request cancelled",ui.FontSize().heading,ui.Colors().white))
+            panel:Add(ui.CreateLabel("You cancelled your request",ui.FontSize().normal,ui.Colors().lightGrey))
         end
         root:Add(panel)
         Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
@@ -92,54 +77,54 @@ function ShowDateRequestReceived(args)
     local requestingPlayer = args[1]
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(CreateLabel(requestingPlayer.name.." has sent you a date request",FontSize.heading))
-    panel:Add(CreateButton("Accept", function()
+    panel:Add(ui.CreateLabel(requestingPlayer.name.." has sent you a date request",ui.FontSize().heading))
+    panel:Add(ui.CreateButton("Accept", function()
         common.InvokeEvent(common.ESubmitPermissionToSitVerdict(),common.NVerdictAccept())
-    end,Colors.blue))
-    panel:Add(CreateButton("Refuse", function()
+    end,ui.Colors().blue))
+    panel:Add(ui.CreateButton("Refuse", function()
         common.InvokeEvent(common.ESubmitPermissionToSitVerdict(),common.NVerdictReject())
         ShowSittingAlone()
-    end,Colors.red))
+    end,ui.Colors().red))
     root:Add(panel)
 end
 
 function ShowVerdictPending(panel)
-    panel:Add(CreateLabel("Please wait for your partners verdict",FontSize.heading,Colors.white))
+    panel:Add(ui.CreateLabel("Please wait for your partners verdict",ui.FontSize().heading,ui.Colors().white))
 end
 
 function ShowResultStatusBothAccepted(panel)
-    panel:Add(CreateLabel("Date finished",FontSize.heading,Colors.white))
-    panel:Add(CreateLabel("Keep dating to improve your relationship score",FontSize.normal,Colors.lightGrey))
-    panel:Add(CreateButton("Date again", function()
+    panel:Add(ui.CreateLabel("Date finished",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("Keep dating to improve your relationship score",ui.FontSize().normal,ui.Colors().lightGrey))
+    panel:Add(ui.CreateButton("Date again", function()
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayAgain())
-    end,Colors.blue))
-    panel:Add(CreateLabel("OR",FontSize.heading,Colors.white))
-    panel:Add(CreateButton("Catch you later", function()
+    end,ui.Colors().blue))
+    panel:Add(ui.CreateLabel("OR",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateButton("Catch you later", function()
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
-    end,Colors.red))
-    panel:Add(CreateLabel("Speed date with different partners to improve your dating score",FontSize.normal,Colors.lightGrey))
+    end,ui.Colors().red))
+    panel:Add(ui.CreateLabel("Speed date with different partners to improve your dating score",ui.FontSize().normal,ui.Colors().lightGrey))
 end
 
 function ShowResultStatusRejected(panel)
-    panel:Add(CreateLabel("You were rejected",FontSize.heading,Colors.white))
-    panel:Add(CreateLabel("\"Rejection is merely a redirection\"",FontSize.normal,Colors.lightGrey))
-    panel:Add(CreateLabel("You will not be able to play again with your partner until tomorrow",FontSize.normal,Colors.lightGrey))
+    panel:Add(ui.CreateLabel("You were rejected",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("\"Rejection is merely a redirection\"",ui.FontSize().normal,ui.Colors().lightGrey))
+    panel:Add(ui.CreateLabel("You will not be able to play again with your partner until tomorrow",ui.FontSize().normal,ui.Colors().lightGrey))
 end
 
 function ShowResultStatusUnrequited(panel)
-    panel:Add(CreateLabel("Unrequited love",FontSize.heading,Colors.white))
-    panel:Add(CreateLabel("Your partner accepted you but you rejected them",FontSize.normal,Colors.lightGrey))
-    panel:Add(CreateLabel("You will not be able to play again with your partner until tomorrow",FontSize.normal,Colors.lightGrey))
+    panel:Add(ui.CreateLabel("Unrequited love",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("Your partner accepted you but you rejected them",ui.FontSize().normal,ui.Colors().lightGrey))
+    panel:Add(ui.CreateLabel("You will not be able to play again with your partner until tomorrow",ui.FontSize().normal,ui.Colors().lightGrey))
 end
 
 function ShowResultStatusPartnerWillPlayLater(panel)
-    panel:Add(CreateLabel("Partner left",FontSize.heading,Colors.white))
-    panel:Add(CreateLabel("Your partner left the date",FontSize.normal,Colors.lightGrey))
+    panel:Add(ui.CreateLabel("Partner left",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("Your partner left the date",ui.FontSize().normal,ui.Colors().lightGrey))
 end
 
 function ShowResultStatusPartnerLeft(panel)
-    panel:Add(CreateLabel("Partner left",FontSize.heading,Colors.white))
-    panel:Add(CreateLabel("Looks like your partner left the world",FontSize.normal,Colors.lightGrey))
+    panel:Add(ui.CreateLabel("Partner left",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("Looks like your partner left the world",ui.FontSize().normal,ui.Colors().lightGrey))
 end
 
 function UninitializeDialogueGame()
@@ -192,11 +177,11 @@ function ShowSittingAlone()
     if(partner ~= nil) then return end
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(CreateLabel("Please wait for a partner to join you at the table",FontSize.heading))
-    panel:Add(CreateButton("Leave", function()
+    panel:Add(ui.CreateLabel("Please wait for a partner to join you at the table",ui.FontSize().heading))
+    panel:Add(ui.CreateButton("Leave", function()
         ShowHome()
         common.InvokeEvent(common.ELocalPlayerLeftSeat())
-    end,Colors.red))
+    end,ui.Colors().red))
     root:Add(panel)
 end
 
@@ -204,8 +189,8 @@ function ShowDialgoueGame()
     progress = 0
     root:Clear()
     local mainPanel = VisualElement.new()
-    SetRelativeSize(mainPanel, 100, 100)
-    mainPanel.style.backgroundColor = StyleColor.new(Colors.black)
+    ui.SetRelativeSize(mainPanel, 100, 100)
+    mainPanel.style.backgroundColor = StyleColor.new(ui.Colors().black)
 
     -- Game Panel
     gamePanel = VisualElement.new()
@@ -213,15 +198,15 @@ function ShowDialgoueGame()
     -- Chat Panel
     chatPanel = UIScrollView.new()
     chatPanel:AddToClassList("ScrollViewContent")
-    local startingLabel = CreateLabel("This is your private chat, it is only visible to you and your partner. Start chatting and have fun! Ask questions in order to progress your date.",FontSize.normal,Colors.white)
+    local startingLabel = ui.CreateLabel("This is your private chat, it is only visible to you and your partner. Start chatting and have fun! Ask questions in order to progress your date.",ui.FontSize().normal,ui.Colors().white)
     startingLabel:AddToClassList("StartingLabel")
     chatPanel:Add(startingLabel)   
     --Progress Bar
     progressBar = CreateDateProgressBar()
     --Exit Button
-    exitButton = CreateButton("Leave", function()
+    exitButton = ui.CreateButton("Leave", function()
         ShowExitConfirmation()
-    end, Colors.red, nil)
+    end, ui.Colors().red, nil)
     
     -- Construct
     mainPanel:Add(gamePanel)
@@ -233,15 +218,15 @@ end
 
 function ShowExitConfirmation()
     local modalContainer = VisualElement.new()
-    SetRelativeSize(modalContainer, 100, 100)
+    ui.SetRelativeSize(modalContainer, 100, 100)
     local modal = VisualElement.new()
-    modal:Add(CreateLabel("Are you sure you want to leave your date?",FontSize.normal,Colors.white))
-    modal:Add(CreateButton("Yes", function()
+    modal:Add(ui.CreateLabel("Are you sure you want to leave your date?",ui.FontSize().normal,ui.Colors().white))
+    modal:Add(ui.CreateButton("Yes", function()
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
-    end, Colors.red, nil))
-    modal:Add(CreateButton("No", function()
+    end, ui.Colors().red, nil))
+    modal:Add(ui.CreateButton("No", function()
         modalContainer:RemoveFromHierarchy()
-    end, Colors.blue, nil))
+    end, ui.Colors().blue, nil))
     modal:AddToClassList("Modal")
     modalContainer:AddToClassList("ModalContainer")
     modalContainer:Add(modal)
@@ -266,21 +251,21 @@ end
 function ShowQuestionReceived(args)
     if(args[2]) then HandlePrivateMessage({partner,args[1]}) end
     gamePanel:Clear()
-    gamePanel:Add(CreateLabel("Your turn to answer!",FontSize.heading,Colors.blue))
-    gamePanel:Add(CreateLabel(args[1],FontSize.normal,Colors.lightGrey))
+    gamePanel:Add(ui.CreateLabel("Your turn to answer!",ui.FontSize().heading,ui.Colors().blue))
+    gamePanel:Add(ui.CreateLabel(args[1],ui.FontSize().normal,ui.Colors().lightGrey))
     ScrollChatToEnd()
 end
 
 function ShowQuestionSubmitted(args)
     gamePanel:Clear()
-    gamePanel:Add(CreateLabel("Waiting for answer...",FontSize.heading,Colors.white))
+    gamePanel:Add(ui.CreateLabel("Waiting for answer...",ui.FontSize().heading,ui.Colors().white))
     HandlePrivateMessage({client.localPlayer,args[1]})
 end
 
 function ShowAcceptingCustomQuestion()
     gamePanel:Clear()
-    gamePanel:Add(CreateLabel("Your turn to ask!",FontSize.heading,Colors.blue))
-    gamePanel:Add(CreateLabel("Send in a custom question now using the in-game chat",FontSize.normal,Colors.lightGrey))
+    gamePanel:Add(ui.CreateLabel("Your turn to ask!",ui.FontSize().heading,ui.Colors().blue))
+    gamePanel:Add(ui.CreateLabel("Send in a custom question now using the in-game chat",ui.FontSize().normal,ui.Colors().lightGrey))
     waitingForCustomQuestion = true
     ScrollChatToEnd()
 end
@@ -294,31 +279,31 @@ function ShowGameTurn(args)
     if(progressBar.value >= 1) then return end
     gamePanel:Clear()
     if(args[1])then
-        gamePanel:Add(CreateLabel("Your turn to ask!",FontSize.heading,Colors.blue))
+        gamePanel:Add(ui.CreateLabel("Your turn to ask!",ui.FontSize().heading,ui.Colors().blue))
         local scrollView = UIScrollView.new()
         gamePanel:Add(scrollView)
         scrollView:AddToClassList("ScrollViewContent")
         for i = 1, #args[2] do
-            local button = CreateButton(args[2][i], function()
+            local button = ui.CreateButton(args[2][i], function()
                 common.InvokeEvent(common.ELocalPlayerSelectedQuestion(),args[2][i],true)
-            end,Colors.grey,"QuestionButton")
+            end,ui.Colors().grey,"QuestionButton")
             scrollView:Add(button)
         end
-        local button = CreateButton("Custom Question", function()
+        local button = ui.CreateButton("Custom Question", function()
             common.InvokeEvent(common.EChooseCustomQuestion())
-        end,Colors.grey,"QuestionButton")
+        end,ui.Colors().grey,"QuestionButton")
         scrollView:Add(button)
     else
-        gamePanel:Add(CreateLabel("Waiting For Question...",FontSize.heading,Colors.white))
+        gamePanel:Add(ui.CreateLabel("Waiting For Question...",ui.FontSize().heading,ui.Colors().white))
     end
     ScrollChatToEnd()
 end
 
 function ShowDialgoueGameIntro(args)
     partner = args[2]
-    local panel = RenderFullScreenPanel()
-    local label = CreateLabel("You are dating "..args[2].name,FontSize.normal,Colors.white)
-    SetRelativeSize(label, 100, 100)
+    local panel = ui.RenderFullScreenPanel(root)
+    local label = ui.CreateLabel("You are dating "..args[2].name,ui.FontSize().normal,ui.Colors().white)
+    ui.SetRelativeSize(label, 100, 100)
     panel:Add(label)
 end
 
@@ -346,10 +331,10 @@ function CreateChatMessage(player,message)
     local accentColor = player == client.localPlayer and "#0DA6FC" or "#CCCADC"
     panel:AddToClassList("HorizontalLayout")
     local richText = "<color="..accentColor..">"..player.name..":</color> <color=#7D7C88> "..common.ReplaceEmojiCodes(message).." </color>"
-    local label = CreateLabel(richText,FontSize.normal,Colors.white)
+    local label = ui.CreateLabel(richText,ui.FontSize().normal,ui.Colors().white)
     label:AddToClassList("LeftTextAlign")
     panel:Add(label)
-    SetMargin(panel, 6)
+    ui.SetMargin(panel, 6)
     return panel
 end
 
@@ -366,53 +351,53 @@ end
 function ShowHome()
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(CreateLabel("Take a seat to begin your date",FontSize.heading,Colors.white))
-    panel:Add(CreateButton("Ranking",ShowRanking ,Colors.blue))
+    panel:Add(ui.CreateLabel("Take a seat to begin your date",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateButton("Ranking",ShowRanking ,ui.Colors().blue))
     if(musicManager.GetIsMuted()) then
-        panel:Add(CreateButton("Enable Music",function()
+        panel:Add(ui.CreateButton("Enable Music",function()
             musicManager.SetIsMuted(false)
             ShowHome()
-        end ,Colors.blue))
+        end ,ui.Colors().blue))
     else
-        panel:Add(CreateButton("Disable Music",function()
+        panel:Add(ui.CreateButton("Disable Music",function()
             musicManager.SetIsMuted(true)
             ShowHome()
-        end ,Colors.red))
+        end ,ui.Colors().red))
     end
     root:Add(panel)
 end
 
 function ShowTutorial()
-    local panel = RenderFullScreenPanel()
+    local panel = ui.RenderFullScreenPanel(root)
     panel:AddToClassList("VerticalLayout")
-    panel:Add(CreateLabel("Welcome to Find A Bae!",FontSize.heading,Colors.white))
+    panel:Add(ui.CreateLabel("Welcome to Find A Bae!",ui.FontSize().heading,ui.Colors().white))
     local categoryBlock = VisualElement.new()
-    categoryBlock:Add(CreateLabel("How to play",FontSize.normal,Colors.white))
-    categoryBlock:Add(CreateLabel("Take a seat to begin your date. Keep the conversation flowing, our curated list of questions are there to spark your creativity",FontSize.normal,Colors.lightGrey))
+    categoryBlock:Add(ui.CreateLabel("How to play",ui.FontSize().normal,ui.Colors().white))
+    categoryBlock:Add(ui.CreateLabel("Take a seat to begin your date. Keep the conversation flowing, our curated list of questions are there to spark your creativity",ui.FontSize().normal,ui.Colors().lightGrey))
     panel:Add(categoryBlock)
     categoryBlock = VisualElement.new()
-    categoryBlock:Add(CreateLabel("Tips for a great date",FontSize.normal,Colors.white))
-    categoryBlock:Add(CreateLabel("Show genuine interest in your date by asking questions and listening to their answers. Authenticity is attractive, share your true thoughts and feelings",FontSize.normal,Colors.lightGrey))
+    categoryBlock:Add(ui.CreateLabel("Tips for a great date",ui.FontSize().normal,ui.Colors().white))
+    categoryBlock:Add(ui.CreateLabel("Show genuine interest in your date by asking questions and listening to their answers. Authenticity is attractive, share your true thoughts and feelings",ui.FontSize().normal,ui.Colors().lightGrey))
     panel:Add(categoryBlock)
     categoryBlock = VisualElement.new()
-    categoryBlock:Add(CreateLabel("Safety & Respect",FontSize.normal,Colors.white))
-    categoryBlock:Add(CreateLabel("Always be respectful and considerate. Everyone deserves a safe and comfortable experience.",FontSize.normal,Colors.lightGrey))
+    categoryBlock:Add(ui.CreateLabel("Safety & Respect",ui.FontSize().normal,ui.Colors().white))
+    categoryBlock:Add(ui.CreateLabel("Always be respectful and considerate. Everyone deserves a safe and comfortable experience.",ui.FontSize().normal,ui.Colors().lightGrey))
     panel:Add(categoryBlock)
     categoryBlock = VisualElement.new()
-    categoryBlock:Add(CreateLabel("Ranking",FontSize.normal,Colors.white))
-    categoryBlock:Add(CreateLabel("Challenge yourself to reach the top of the dating and relationship leaderboards by meeting new partners or nurturing your existing relationships.",FontSize.normal,Colors.lightGrey))
+    categoryBlock:Add(ui.CreateLabel("Ranking",ui.FontSize().normal,ui.Colors().white))
+    categoryBlock:Add(ui.CreateLabel("Challenge yourself to reach the top of the dating and relationship leaderboards by meeting new partners or nurturing your existing relationships.",ui.FontSize().normal,ui.Colors().lightGrey))
     panel:Add(categoryBlock)
-    panel:Add(CreateButton("Continue",ShowHome,Colors.blue))
+    panel:Add(ui.CreateButton("Continue",ShowHome,ui.Colors().blue))
 end
 
 function ShowRanking()
     root:Clear()
     ranking.FetchRelationshipLeaderboard(function()end)
     ranking.FetchDatingLeaderboard(function() 
-        local panel = RenderFullScreenPanel()
-        local title = CreateLabel("Ranking",FontSize.heading,Colors.white)
+        local panel = ui.RenderFullScreenPanel(root)
+        local title = ui.CreateLabel("Ranking",ui.FontSize().heading,ui.Colors().white)
         local leaderboardPanel = VisualElement.new()
-        local guideLabel = CreateLabel("",FontSize.normal,Colors.lightGrey)
+        local guideLabel = ui.CreateLabel("",ui.FontSize().normal,ui.Colors().lightGrey)
         local tabOptions = {{
             text = "Dating",
             pressed = function() ShowRankingData(common.NRankingTypeDatingScore(),leaderboardPanel,guideLabel) end
@@ -420,19 +405,19 @@ function ShowRanking()
             text = "Relationship",
             pressed = function() ShowRankingData(common.NRankingTypeRelationshipScore(),leaderboardPanel,guideLabel) end
         }}
-        local tabs = CreateTabs(tabOptions)
-        local closeButton = CreateButton("Close", function()
+        local tabs = ui.CreateTabs(tabOptions)
+        local closeButton = ui.CreateButton("Close", function()
             ShowHome()
-        end,Colors.red)
+        end,ui.Colors().red)
         panel:Add(title)
         panel:Add(tabs)
         panel:Add(leaderboardPanel)
         panel:Add(guideLabel)
         panel:Add(closeButton)
-        SetRelativeSize(title, 90, 5)
-        SetRelativeSize(tabs, 90, 10)
-        SetRelativeSize(leaderboardPanel, 90, 68)
-        SetRelativeSize(guideLabel, 90, 10)
+        ui.SetRelativeSize(title, 90, 5)
+        ui.SetRelativeSize(tabs, 90, 10)
+        ui.SetRelativeSize(leaderboardPanel, 90, 68)
+        ui.SetRelativeSize(guideLabel, 90, 10)
         ShowRankingData(common.NRankingTypeDatingScore(),leaderboardPanel,guideLabel)
     end)
 end
@@ -442,13 +427,13 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
     local ve = VisualElement.new()
     ve:AddToClassList("HorizontalSpaceBetween")
     local variableString = rankingType == common.NRankingTypeDatingScore() and "Name" or "Couple"
-    ve:Add(CreateLabel(variableString,FontSize.heading,Colors.white))
-    ve:Add(CreateLabel("Score",FontSize.heading,Colors.white))
+    ve:Add(ui.CreateLabel(variableString,ui.FontSize().heading,ui.Colors().white))
+    ve:Add(ui.CreateLabel("Score",ui.FontSize().heading,ui.Colors().white))
     leaderboardPanel:Add(ve)
     local playerFound = false
     local data = rankingType == common.NRankingTypeDatingScore() and ranking.DatingLeaderboard() or ranking.RelationshipLeaderboard()
     if(#data == 0) then
-        leaderboardPanel:Add(CreateLabel("Looks like no one has scored yet. Start dating!",FontSize.normal,Colors.lightGrey))
+        leaderboardPanel:Add(ui.CreateLabel("Looks like no one has scored yet. Start dating!",ui.FontSize().normal,ui.Colors().lightGrey))
     else
         local myEntryShown = false
         for i =1 , #data do
@@ -456,7 +441,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
             ve:AddToClassList("HorizontalSpaceBetween")
             local playerVe = VisualElement.new()
             playerVe:AddToClassList("HorizontalLayout")
-            local rankLabel = CreateLabel(data[i].rank,FontSize.normal,Colors.white)
+            local rankLabel = ui.CreateLabel(data[i].rank,ui.FontSize().normal,ui.Colors().white)
             rankLabel.style.width = StyleLength.new(Length.Percent(10))
             rankLabel:AddToClassList("DontOverflow")
             playerVe:Add(rankLabel)
@@ -464,9 +449,9 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
             if(data[i].isKeyPairId) then
                 local labels = {}
                 local couple = ranking.GetOriginalStrings(data[i].name)
-                labels[1] = CreateLabel(couple[1],FontSize.normal,Colors.white)
-                labels[2] = CreateLabel("&",FontSize.normal,Colors.lightGrey)
-                labels[3] = CreateLabel(couple[2],FontSize.normal,Colors.white)
+                labels[1] = ui.CreateLabel(couple[1],ui.FontSize().normal,ui.Colors().white)
+                labels[2] = ui.CreateLabel("&",ui.FontSize().normal,ui.Colors().lightGrey)
+                labels[3] = ui.CreateLabel(couple[2],ui.FontSize().normal,ui.Colors().white)
                 for i=1,#labels do
                     labels[i].style.marginLeft = StyleLength.new(Length.new( (i == 1 and 7 or 4)))
                     if(i~=2) then labels[i]:AddToClassList("DontOverflow") end
@@ -474,7 +459,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
                     playerVe:Add(labels[i])
                 end
             else
-                local nameLabel = CreateLabel(data[i].name,FontSize.normal,Colors.white)
+                local nameLabel = ui.CreateLabel(data[i].name,ui.FontSize().normal,ui.Colors().white)
                 nameLabel.style.marginLeft = StyleLength.new(Length.new(7))
                 nameLabel:AddToClassList("DontOverflow")
                 nameLabel:AddToClassList("LeftTextAlign")
@@ -485,7 +470,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
                 myEntryShown = true
             end
             ve:Add(playerVe)
-            local scoreLabel = CreateLabel(data[i].score,FontSize.normal,Colors.white)
+            local scoreLabel = ui.CreateLabel(data[i].score,ui.FontSize().normal,ui.Colors().white)
             scoreLabel.style.width = StyleLength.new(Length.Percent(10))
             scoreLabel:AddToClassList("DontOverflow")
             scoreLabel:AddToClassList("RightTextAlign")
@@ -499,90 +484,4 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
     "You get 1 point for each date with an existing partner"
     guideLabel:SetPrelocalizedText(variableString,false)
 
-end
-
-function CreateTabs(options)
-    local ve = VisualElement.new()
-    ve:AddToClassList("HorizontalLayout")
-    for i = 1 , #options do
-        local button = UIButton.new()
-        button.style.color = StyleColor.new(Color.clear)
-        button:Add(CreateLabel(options[i].text,FontSize.normal,Color.white)) 
-        button.style.borderBottomColor = StyleColor.new(Colors.blue)
-        button:RegisterPressCallback(function()
-            for j = 1 , ve.childCount do
-                local child = ve:ElementAt(j-1)
-                if(button == child) then
-                    -- Select
-                    child:ElementAt(0).style.color = StyleColor.new(Colors.blue)
-                    child.style.borderBottomWidth = StyleFloat.new(3)
-                else
-                    -- Unselect
-                    child:ElementAt(0).style.color = StyleColor.new(Colors.white)
-                    child.style.borderBottomWidth =  StyleFloat.new(0)
-                end
-            end
-            options[i].pressed()
-        end)
-        ve:Add(button)
-        -- Select Default
-        ve:ElementAt(0):ElementAt(0).style.color = StyleColor.new(Colors.blue)
-        ve:ElementAt(0).style.borderBottomWidth = StyleFloat.new(3)
-    end
-
-    return ve
-end
-
-function CreateLabel(...)
-    local args = {...}
-    local text = args[1]
-    local fontSize = args[2] == nil and FontSize.normal or args[2]
-    local color = args[3] == nil and Colors.white or args[3]
-    local label = UILabel.new()
-    label:SetEmojiPrelocalizedText(text, false)
-    label.style.color = StyleColor.new(color)
-    label.style.fontSize = StyleLength.new(Length.new(fontSize))
-    label:AddToClassList("DefaultLabel")
-    return label
-end
-
-function CreateButton(text,onPressed,color,class)
-    local button = UIButton.new()
-    SetBackgroundColor(button, color)
-    local label = CreateLabel(text,FontSize.normal,Colors.white)
-    button:Add(label) 
-    button:AddToClassList(class == nil and "DefaultButton" or class)
-    button:RegisterPressCallback(onPressed)
-    return button
-end
-
-function SetMargin(ve:VisualElement,amount)
-    local scaledAmount = amount
-    ve.style.marginTop = StyleLength.new(Length.new(scaledAmount))
-    ve.style.marginRight = StyleLength.new(Length.new(scaledAmount))
-    ve.style.marginBottom = StyleLength.new(Length.new(scaledAmount))
-    ve.style.marginLeft = StyleLength.new(Length.new(scaledAmount))
-end
-
-function SetBackgroundColor(ve:VisualElement,color)
-    ve.style.backgroundColor = StyleColor.new(color)
-end
-
-function SetRelativeSize(ve : VisualElement,w,h)
-    if(w > -1) then ve.style.width = StyleLength.new(Length.Percent(w)) end
-    if(h > -1) then ve.style.height = StyleLength.new(Length.Percent(h)) end
-end
-
-function SetSize(ve : VisualElement,w,h)
-    if(w > -1) then ve.style.width = StyleLength.new(Length.new(w)) end
-    if(h > -1) then ve.style.height = StyleLength.new(Length.new(h)) end
-end
-
-function RenderFullScreenPanel()
-    root:Clear()
-    local panel = VisualElement.new()
-    SetBackgroundColor(panel, Colors.black)
-    SetRelativeSize(panel, 100, 100)
-    root:Add(panel)
-    return panel
 end

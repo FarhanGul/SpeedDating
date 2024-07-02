@@ -95,7 +95,7 @@ function EPermissionToSitRefused() return "PermissionToSitRefused" end -- seatId
 function EPermissionToSitRequestCancelled() return "PermissionToSitRequestCancelled" end -- void
 function ECancelPermissionToSitRequest() return "CancelPermissionToSitRequest" end -- void
 function ECanPlayerOccupySeatVerdictReceived() return "CanPlayerOccupySeatVerdictReceived" end -- seatId ( number ) , canOccupy ( boolean ) , canSitWithoutPermission ( boolean )
-function EUpdatePlayerDatingStatus() return "UpdatePlayerDatingStatus" end -- datingStatus ( Enum DatingStatus)
+function EUpdatePlayerDatingStatus() return "UpdatePlayerDatingStatus" end -- targetPlayer (Player), datingStatus ( Enum DatingStatus)
 
 -- Enumerations
 -- Result Status

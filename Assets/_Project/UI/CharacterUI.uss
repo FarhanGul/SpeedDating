@@ -1,2 +1,20 @@
+:root{
+    --normal-font: url("project://database/Packages/Highrise Studio/Assets/Fonts/MuseoSansRounded-500 SDF.asset"); 
+}
+
 .character-u-i {
+}
+
+*{
+    white-space: normal;
+    align-items: center;
+    -unity-text-align: middle-center;
+}
+
+
+.DefaultLabel{
+    margin:2px;
+    width: auto;
+    height: auto;
+    -unity-font-definition: var(--normal-font);
 }

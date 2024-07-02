@@ -16,15 +16,13 @@ using Highrise.Client;
 
 namespace Highrise.Lua.Generated
 {
-    [AddComponentMenu("Lua/References")]
+    [AddComponentMenu("Lua/UILibrary")]
     [LuaBehaviourScript(s_scriptGUID)]
-    public class References : LuaBehaviourThunk
+    public class UILibrary : LuaBehaviourThunk
     {
-        private const string s_scriptGUID = "23af509a3f3491f43bf810d021751c7a";
+        private const string s_scriptGUID = "f2a5d7927dc4fb646b50f178d6b19b56";
         public override string ScriptGUID => s_scriptGUID;
 
-        [SerializeField] public UnityEngine.GameObject m_gameUIGameObject = default;
-        [SerializeField] public UnityEngine.GameObject m_seatManagerGameObject = default;
 
         protected override SerializedPropertyValue[] SerializeProperties()
         {
@@ -33,8 +31,6 @@ namespace Highrise.Lua.Generated
 
             return new SerializedPropertyValue[]
             {
-                CreateSerializedProperty(_script.GetPropertyAt(0), m_gameUIGameObject),
-                CreateSerializedProperty(_script.GetPropertyAt(1), m_seatManagerGameObject),
             };
         }
     }
