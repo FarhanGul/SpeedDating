@@ -236,11 +236,11 @@ function self:ClientAwake()
         e_sendPlayerWantsToOccupySeat:FireServer(args[1])
     end)
 
-    common.SubscribeEvent(common.ESubmitPermissionToSitVerdict(),function(args)
+    common.SubscribeEvent(common.ESubmitDateRequestVerdict(),function(args)
         e_sendPermissionToSitVerdictToServer:FireServer(args[1])
     end)
 
-    common.SubscribeEvent(common.ECancelPermissionToSitRequest(),function(args)
+    common.SubscribeEvent(common.ECancelDateRequest(),function(args)
         e_sendPermissionToSitRequestCancelledToServer:FireServer()
     end)
 

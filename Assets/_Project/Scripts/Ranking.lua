@@ -38,7 +38,7 @@ function self:ServerAwake()
         end)
     end)
     e_sendDateCompleteToServer:Connect(function(sender,player,partner)
-        local pairId = GetUniquePairIdentifier(player.name,partner.name)
+        local pairId = common.GetUniquePairIdentifier(player.name,partner.name)
         -- Fetch Partner History
         FetchPartnerHistoryFromStorage(function(partnerHistory)
             if(not table.find(partnerHistory,pairId)) then
@@ -108,11 +108,8 @@ function FetchRelationshipLeaderboardFromStorage(responseCallback)
     end)
 end
 
-
 function CompletedDate(partner)
-    local pairId = GetUniquePairIdentifier(client.localPlayer.name,partner.name)
-    local chosenPlayer = GetOriginalStrings(pairId)[1] 
-    if(client.localPlayer.name == chosenPlayer) then
+    if(common.IsChosenFromUniquePair(partner)) then
         e_sendDateCompleteToServer:FireServer(client.localPlayer,partner)
     end
 end
@@ -135,19 +132,6 @@ function RelationshipLeaderboard()
     return relationshipLeaderboard
 end
 
-function GetUniquePairIdentifier(str1, str2)
-    if str1 > str2 then
-        str1, str2 = str2, str1
-    end
-    return str1 .. common.CRelationshipIdDelimiter() .. str2
-end
-
-function GetOriginalStrings(identifier)
-    local escapedDelimiter = common.CRelationshipIdDelimiter():gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
-    local str1,str2 = identifier:match("^(.-)" .. escapedDelimiter .. "(.-)$")
-    return {str1,str2}
-end
-
 function GetFormattedLeaderboard(player,fullLeaderboard,isKeyUniquePairId)
     local kvPairs = {}
     for k, v in pairs(fullLeaderboard) do
@@ -161,7 +145,7 @@ function GetFormattedLeaderboard(player,fullLeaderboard,isKeyUniquePairId)
         local k = pair.key
         local v = pair.value
         if(isKeyUniquePairId) then
-            if(GetOriginalStrings(k)[1] == player.name or GetOriginalStrings(k)[2] == player.name)then isPlayerFound = true end
+            if(common.GetOriginalStrings(k)[1] == player.name or common.GetOriginalStrings(k)[2] == player.name)then isPlayerFound = true end
         else
             if(k == player.name) then isPlayerFound = true end
         end
@@ -174,7 +158,7 @@ function GetFormattedLeaderboard(player,fullLeaderboard,isKeyUniquePairId)
         for _, pair in ipairs(kvPairs) do
             local k = pair.key
             local v = pair.value
-            local condition = isKeyUniquePairId and (GetOriginalStrings(k)[1] == player.name or GetOriginalStrings(k)[2] == player.name) or (k == player.name)
+            local condition = isKeyUniquePairId and (common.GetOriginalStrings(k)[1] == player.name or common.GetOriginalStrings(k)[2] == player.name) or (k == player.name)
             if(condition) then
                 table.insert(formatted,{name=k,score=v,rank=currentCount+1,isKeyPairId=isKeyUniquePairId})
                 break

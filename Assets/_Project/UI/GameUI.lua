@@ -19,7 +19,6 @@ local exitButton
 
 -- Functions
 function self:ClientAwake()
-    common.SubscribeEvent(common.ELocalPlayerOccupiedSeat(),ShowSittingAlone)
     common.SubscribeEvent(common.EBeginDate(),ShowDialgoueGameIntro)
     common.SubscribeEvent(common.EPrivateMessageSent(),HandlePrivateMessage)
     common.SubscribeEvent(common.ETurnStarted(),ShowGameTurn)
@@ -28,62 +27,62 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EUpdateResultStatus(),HandleResultStatusUpdated)
     common.SubscribeEvent(common.EChooseCustomQuestion(),ShowAcceptingCustomQuestion)
     common.SubscribeEvent(common.EDateRequestReceived(),ShowDateRequestReceived)
-    common.SubscribeEvent(common.EPermissionToSitRefused(),ShowPermissionToSitRefused)
-    common.SubscribeEvent(common.ECanPlayerOccupySeatVerdictReceived(),HandleCanPlayerOccupySeatVerdictReceived)
-    common.SubscribeEvent(common.EPermissionToSitRequestCancelled(),ShowSittingAlone)
+    common.SubscribeEvent(common.EIsDateRequestValidReceived(),HandleIsDateRequestValidReceived)
+    common.SubscribeEvent(common.EProposalVerdictReceived(),HandleProposalVerdictReceived)
     if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowTutorial() end
 end
 
-function HandleCanPlayerOccupySeatVerdictReceived(args)
-    -- seatId ( number ) , canOccupy ( boolean ) , canSitWithoutPermission ( boolean )
-    if(args[2] and not args[3]) then
-        ShowAskingForPermission()
+function HandleIsDateRequestValidReceived(args)
+    if(args[1] == client.localPlayer.name)then
+        if(args[2] == common.NVerdictAccept())then
+            ShowAskingForPermission()
+        end
     end
 end
 
-function ShowAskingForPermission(args)
+function ShowAskingForPermission()
     root:Clear()
     local panel = VisualElement.new()
     panel:Add(ui.CreateLabel("Please wait",ui.FontSize().heading))
     panel:Add(ui.CreateLabel("Asking for permission",ui.FontSize().normal,ui.Colors().lightGrey))
     panel:Add(ui.CreateButton("Cancel Request", function()
-        common.InvokeEvent(common.ECancelPermissionToSitRequest())
+        common.InvokeEvent(common.ECancelDateRequest())
     end,ui.Colors().red))
     root:Add(panel)
 end
 
-function ShowPermissionToSitRefused(args)
-    local rejectedPlayer = args[2]
-    local verdict = args[3]
-    if(rejectedPlayer == client.localPlayer) then
-        root:Clear()
-        local panel = VisualElement.new()
-        if(verdict == common.NVerdictReject()) then
-            panel:Add(ui.CreateLabel("Your partner is not interested",ui.FontSize().heading,ui.Colors().white))
-            panel:Add(ui.CreateLabel("Please try another table",ui.FontSize().normal,ui.Colors().lightGrey))
-        elseif(verdict == common.NVerdictPlayerLeft()) then
-            panel:Add(ui.CreateLabel("Request cancelled",ui.FontSize().heading,ui.Colors().white))
-            panel:Add(ui.CreateLabel("Your partner left the world",ui.FontSize().normal,ui.Colors().lightGrey))
-        elseif(verdict == common.NVerdictPlayLater()) then
-            panel:Add(ui.CreateLabel("Request cancelled",ui.FontSize().heading,ui.Colors().white))
-            panel:Add(ui.CreateLabel("You cancelled your request",ui.FontSize().normal,ui.Colors().lightGrey))
-        end
-        root:Add(panel)
-        Timer.new(common.TSeatNotInteractableAfterRefusalDuration(), ShowHome, false)
+function HandleProposalVerdictReceived(args)
+    local verdict = args[1]
+    root:Clear()
+    local panel = VisualElement.new()
+    if(verdict == common.NVerdictReject()) then
+        panel:Add(ui.CreateLabel("Your partner is not interested",ui.FontSize().heading,ui.Colors().white))
+        panel:Add(ui.CreateLabel("Please try another player",ui.FontSize().normal,ui.Colors().lightGrey))
+    elseif(verdict == common.NVerdictPlayerLeft()) then
+        panel:Add(ui.CreateLabel("Request cancelled",ui.FontSize().heading,ui.Colors().white))
+        panel:Add(ui.CreateLabel("Your partner left the world",ui.FontSize().normal,ui.Colors().lightGrey))
+    elseif(verdict == common.NVerdictPlayLater()) then
+        ShowHome()
+    end
+    root:Add(panel)
+    if(verdict == common.NVerdictReject() or verdict == common.NVerdictPlayerLeft() ) then
+        Timer.new(common.TSelfDistructingNotificationDuration(), function()
+            if(root:Contains(panel)) then ShowHome() end
+        end, false)
     end
 end
 
 function ShowDateRequestReceived(args)
-    local requestingPlayer = args[1]
+    local requestingPlayerName = args[1]
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(ui.CreateLabel(requestingPlayer.name.." has sent you a date request",ui.FontSize().heading))
+    panel:Add(ui.CreateLabel(requestingPlayerName.." has sent you a date request",ui.FontSize().heading))
     panel:Add(ui.CreateButton("Accept", function()
-        common.InvokeEvent(common.ESubmitPermissionToSitVerdict(),common.NVerdictAccept())
+        common.InvokeEvent(common.ESubmitDateRequestVerdict(),common.NVerdictAccept())
     end,ui.Colors().blue))
     panel:Add(ui.CreateButton("Refuse", function()
-        common.InvokeEvent(common.ESubmitPermissionToSitVerdict(),common.NVerdictReject())
-        ShowSittingAlone()
+        common.InvokeEvent(common.ESubmitDateRequestVerdict(),common.NVerdictReject())
+        ShowHome()
     end,ui.Colors().red))
     root:Add(panel)
 end
@@ -155,18 +154,15 @@ function HandleResultStatusUpdated(args)
         elseif(resultStatus == common.NResultStatusUnrequited()) then ShowResultStatusUnrequited(gamePanel)
         elseif(resultStatus == common.NResultStatusPartnerWillPlayLater()) then ShowResultStatusPartnerWillPlayLater(gamePanel)
         end
-        if (resultStatus == common.NResultStatusRejected()) then
-            common.InvokeEvent(common.ELocalPlayerLeftSeat())
-        end
         if(resultStatus ~= common.NResultStatusPlayAgain()) then
-            Timer.new(common.TSeatAvailabilityCooldown(), function()
-                if(resultStatus == common.NResultStatusCancelled() or resultStatus == common.NResultStatusPartnerWillPlayLater() 
-                    or resultStatus == common.NResultStatusUnrequited()  ) then
-                    ShowSittingAlone()
-                else
-                    ShowHome()
-                end
-            end,false)
+            root:Clear()
+            local ve = VisualElement.new()
+            ve:Add(ui.CreateLabel("Date Finished",ui.FontSize().heading,ui.Colors().white))
+            ve:Add(ui.CreateLabel("Your partner left",ui.FontSize().normal,ui.Colors().lightGrey))
+            root:Add(ve)
+            Timer.new(common.TSelfDistructingNotificationDuration(), function()
+                if(root:Contains(ve)) then ShowHome() end
+            end, false)
         end
     end
     ScrollChatToEnd()
@@ -351,7 +347,7 @@ end
 function ShowHome()
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(ui.CreateLabel("Take a seat to begin your date",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("Tap on a player to send a date request",ui.FontSize().heading,ui.Colors().white))
     panel:Add(ui.CreateButton("Ranking",ShowRanking ,ui.Colors().blue))
     if(musicManager.GetIsMuted()) then
         panel:Add(ui.CreateButton("Enable Music",function()
@@ -373,7 +369,7 @@ function ShowTutorial()
     panel:Add(ui.CreateLabel("Welcome to Find A Bae!",ui.FontSize().heading,ui.Colors().white))
     local categoryBlock = VisualElement.new()
     categoryBlock:Add(ui.CreateLabel("How to play",ui.FontSize().normal,ui.Colors().white))
-    categoryBlock:Add(ui.CreateLabel("Take a seat to begin your date. Keep the conversation flowing, our curated list of questions are there to spark your creativity",ui.FontSize().normal,ui.Colors().lightGrey))
+    categoryBlock:Add(ui.CreateLabel("Tap on player to send a date request. If they accept, start chatting! Keep the conversation flowing, our curated list of questions are there to spark your creativity",ui.FontSize().normal,ui.Colors().lightGrey))
     panel:Add(categoryBlock)
     categoryBlock = VisualElement.new()
     categoryBlock:Add(ui.CreateLabel("Tips for a great date",ui.FontSize().normal,ui.Colors().white))
@@ -448,7 +444,7 @@ function ShowRankingData(rankingType,leaderboardPanel,guideLabel)
             playerVe.style.width = StyleLength.new(Length.Percent(80))
             if(data[i].isKeyPairId) then
                 local labels = {}
-                local couple = ranking.GetOriginalStrings(data[i].name)
+                local couple = common.GetOriginalStrings(data[i].name)
                 labels[1] = ui.CreateLabel(couple[1],ui.FontSize().normal,ui.Colors().white)
                 labels[2] = ui.CreateLabel("&",ui.FontSize().normal,ui.Colors().lightGrey)
                 labels[3] = ui.CreateLabel(couple[2],ui.FontSize().normal,ui.Colors().white)

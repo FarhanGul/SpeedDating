@@ -1,5 +1,8 @@
 --!Type(Module)
 
+-- Imports
+local common = require("Common")
+
 -- Events
 local e_requestServerTime = Event.new("requestServerTime")
 local e_sendServerTimeToClient = Event.new("sendServerTimeToClient")
@@ -10,12 +13,14 @@ local audioSources
 local isMuted = false
 
 function self:ServerAwake()
+    if(not common.CEnableMusic()) then return end
     e_requestServerTime:Connect(function(player)
         e_sendServerTimeToClient:FireClient(player,Time.time)
     end)
 end
 
 function self:ClientAwake()
+    if(not common.CEnableMusic()) then return end
     e_sendServerTimeToClient:Connect(function(serverTime)
         StartSyncedMusic(serverTime)
     end)

@@ -36,7 +36,6 @@ end
 
 function self:ClientAwake()
     common.SubscribeEvent(common.ESubmitVerdict(),HandlePlayerSubmittedVerdict)
-    common.SubscribeEvent(common.EPlayerLeftSeat(),HandlePlayerLeftSeat)
     common.SubscribeEvent(common.EBeginDate(),BeginGame)
     common.SubscribeEvent(common.ELocalPlayerSelectedQuestion(),HandlePlayerSelectedQuestion)
     common.SubscribeEvent(common.EPrivateMessageSent(),HandlePrivateMessageSent)
@@ -52,6 +51,14 @@ function self:ClientAwake()
         partnerVerdict = verdict
         HandleVerdict()
     end)
+    client.PlayerDisconnected:Connect(ClientHandlesPlayerDisconnected)
+
+end
+
+function ClientHandlesPlayerDisconnected(player)
+    if(player == partner or ( partner ~= nil and player == client.localPlayer)) then
+        EndGame(common.NResultStatusCancelled())
+    end
 end
 
 function BeginGame(args)
@@ -123,17 +130,11 @@ function HandlePrivateMessageSent(args)
     end
 end
 
-function HandlePlayerLeftSeat(args)
-    if(args[1] == partner) then
-        EndGame(common.NResultStatusCancelled())
-    end
-end
-
 function EndGame(resultStatus)
+    common.InvokeEvent(common.EUpdateResultStatus(),resultStatus)
+    common.InvokeEvent(common.EEndDate(),partner)
     partner = nil
     waitingForAnswer = nil
-    common.InvokeEvent(common.EUpdateResultStatus(),resultStatus)
-    common.InvokeEvent(common.EEndDate())
 end
 
 function GetRandomQuestions(questionType)

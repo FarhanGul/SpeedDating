@@ -91,7 +91,7 @@ MonoBehaviour:
       type: {class: UIWorldOutputSettings, ns: Highrise.Client, asm: com.pz.highrise.game.client}
       data:
         Renderer: {fileID: 6288542764917330723}
-        Size: {x: 128, y: 32}
+        Size: {x: 160, y: 40}
         ClearColor: 1
         ClearColorValue: {r: 1, g: 1, b: 1, a: 0}
 --- !u!33 &4606758348932943649

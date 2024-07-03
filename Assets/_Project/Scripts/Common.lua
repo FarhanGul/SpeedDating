@@ -74,11 +74,30 @@ function ReplaceEmojiCodes(inputString)
     return result
 end
 
+function GetUniquePairIdentifier(str1, str2)
+    if str1 > str2 then
+        str1, str2 = str2, str1
+    end
+    return str1 .. CRelationshipIdDelimiter() .. str2
+end
+
+function GetOriginalStrings(identifier)
+    local escapedDelimiter = CRelationshipIdDelimiter():gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
+    local str1,str2 = identifier:match("^(.-)" .. escapedDelimiter .. "(.-)$")
+    return {str1,str2}
+end
+
+function IsChosenFromUniquePair(partner)
+    local pairId = GetUniquePairIdentifier(client.localPlayer.name,partner.name)
+    local chosenPlayer = GetOriginalStrings(pairId)[1] 
+    return client.localPlayer.name == chosenPlayer
+end
+
 -- Events
 function ELocalPlayerOccupiedSeat() return "LocalPlayerOccupiedSeat" end -- void
 function ELocalPlayerLeftSeat() return "LocalPlayerLeftSeat" end -- void
 function EBeginDate() return "BeginDate" end -- you(Player) , partner(Player) , isYourTurnFirst(Bool) , arePlayersPlayingForTheFirstTime(Bool)
-function EEndDate() return "EndDate" end -- void
+function EEndDate() return "EndDate" end -- partner(Player)
 function EPrivateMessageSent() return "PrivateMessageSent" end -- from(Player) , message(string)
 function ETurnStarted() return "TurnStarted" end -- isMyTurn(Bool)
 function ELocalPlayerSelectedQuestion() return "LocalPlayerSelectedQuestion" end -- question(string),sendOnChat(bool)
@@ -89,13 +108,16 @@ function EUpdateSeatOccupant() return "UpdateSeatOccupant" end -- seats(Seats)
 function ETryToOccupySeat() return "TryToOccupySeat" end -- id(integer)
 function ESubmitVerdict() return "SubmitVerdict" end -- verdict(Enum Verdict)
 function EChooseCustomQuestion() return "ChooseCustomQuestion" end -- void
-function EDateRequestReceived() return "DateRequestReceived" end -- requestingPlayer(Player)
-function ESubmitPermissionToSitVerdict() return "SubmitPermissionToSitVerdict" end -- verdict(Enum Verdict)
+function EDateRequestReceived() return "DateRequestReceived" end -- requestingPlayerName(string)
+function ESubmitDateRequestVerdict() return "ESubmitDateRequestVerdict" end -- verdict(Enum Verdict)
 function EPermissionToSitRefused() return "PermissionToSitRefused" end -- seatId (number), rejectedPlayer (Player), verdict (Enum Verdict)
 function EPermissionToSitRequestCancelled() return "PermissionToSitRequestCancelled" end -- void
-function ECancelPermissionToSitRequest() return "CancelPermissionToSitRequest" end -- void
+function ECancelDateRequest() return "CancelPermissionToSitRequest" end -- void
 function ECanPlayerOccupySeatVerdictReceived() return "CanPlayerOccupySeatVerdictReceived" end -- seatId ( number ) , canOccupy ( boolean ) , canSitWithoutPermission ( boolean )
 function EUpdatePlayerDatingStatus() return "UpdatePlayerDatingStatus" end -- targetPlayer (Player), datingStatus ( Enum DatingStatus)
+function EPlayerTapped() return "EPlayerTapped" end -- tappedPlayer (Player)
+function EIsDateRequestValidReceived() return "EIsDateRequestValidReceived" end -- targetPlayerName (string), verdict (Enum Verdict)
+function EProposalVerdictReceived() return "EProposalVerdictReceived" end -- verdict (Enum Verdict)
 
 -- Enumerations
 -- Result Status
@@ -131,6 +153,7 @@ function NDatingStatusDating() return "DatingStatusMatchmaking" end
 -- Duration
 function TSeatAvailabilityCooldown() return 4 end
 function TSeatNotInteractableAfterRefusalDuration() return 4 end
+function TSelfDistructingNotificationDuration() return 3 end
 
 -- Constants
 function CRequiredProgress() return CEnableQuickGame() and 2 or 8 end
@@ -138,6 +161,7 @@ function CVisibleTopRanks() return 8 end
 function CRelationshipIdDelimiter() return "," end 
 -- Development Constants
 function CUseProductionStorage() return false end
+function CEnableMusic() return false end
 function CEnableDevCommands() return false end
 function CEnableUIDebugging() return false end
 function CEnableQuickGame() return false end
