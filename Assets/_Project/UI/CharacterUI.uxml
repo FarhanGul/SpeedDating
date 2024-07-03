@@ -6,7 +6,8 @@
     xmlns:editor="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
-  <hr:UILuaView name="root" class="character-u-i" picking-mode="Ignore">
+  <hr:UILuaView name="root" picking-mode="Ignore">
+    <Style src="Styles.uss" />  
   </hr:UILuaView>
 
 </UXML>
