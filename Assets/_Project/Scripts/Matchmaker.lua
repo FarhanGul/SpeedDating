@@ -122,7 +122,7 @@ function ServerHandlesFetchDatingStatus(player)
 end
 
 function ServerHandlesAskPermission(askingPlayer,interestedIn)
-    if(playersDatingStatus[interestedIn.name] == common.NDatingStatusFree())then
+    if(playersDatingStatus[interestedIn.name] == common.NDatingStatusFree() and playersDatingStatus[askingPlayer.name] == common.NDatingStatusFree())then
         -- send request to interestedIn
         e_sendDateRequestReceivedToClient:FireClient(interestedIn,askingPlayer.name)
         -- Tell askingPlayer to wait

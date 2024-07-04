@@ -148,12 +148,12 @@ function NQuestionTypeOpening() return "QuestionTypeOpening" end
 -- Dating Status
 function NDatingStatusFree() return "DatingStatusFree" end
 function NDatingStatusMatchmaking() return "DatingStatusMatchmaking" end
-function NDatingStatusDating() return "DatingStatusMatchmaking" end
+function NDatingStatusDating() return "DatingStatusDating" end
 
 -- Duration
 function TSeatAvailabilityCooldown() return 4 end
 function TSeatNotInteractableAfterRefusalDuration() return 4 end
-function TSelfDistructingNotificationDuration() return 3 end
+function TSelfDistructingNotificationDuration() return 4 end
 
 -- Constants
 function CRequiredProgress() return CEnableQuickGame() and 2 or 8 end
@@ -161,6 +161,7 @@ function CVisibleTopRanks() return 8 end
 function CRelationshipIdDelimiter() return "," end 
 -- Development Constants
 function CUseProductionStorage() return false end
+function CShowTutorial() return false end
 function CEnableMusic() return false end
 function CEnableDevCommands() return false end
 function CEnableUIDebugging() return false end

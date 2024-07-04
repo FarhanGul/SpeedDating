@@ -3,7 +3,6 @@ local common = require("Common")
 
 -- Private
 local partner
-local seatedPlayers = {}
 
 function self:ClientAwake()
     common.SubscribeEvent(common.EBeginDate(),function(args)
@@ -12,7 +11,6 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EEndDate(),function()
         partner = nil
     end)
-    common.SubscribeEvent(common.EUpdateSeatOccupant(),HandleUpdateSeatOccupant)
     Chat.TextMessageReceivedHandler:Connect(function(channel,_from,_message)
         if( common.CEnableDevCommands() and string.sub(_message,1,1) == "@") then
             if(_from == client.localPlayer) then
@@ -24,20 +22,10 @@ function self:ClientAwake()
             if(_from == client.localPlayer or _from == partner) then
                 common.InvokeEvent(common.EPrivateMessageSent(),_from,_message)
             end
-        elseif(table.find(seatedPlayers,_from.name) == nil ) then
+        else
             Chat:DisplayTextMessage(channel, _from, _message)
         end
     end)
-end
-
-function HandleUpdateSeatOccupant(args)
-    seatedPlayers = {}
-    local data = args[1]:GetData()
-    for k,v in pairs(data) do
-        if(v.occupant ~= nil ) then
-            table.insert(seatedPlayers,v.occupant.name) 
-        end
-    end
 end
 
 function HandleDevMode(message)

@@ -9,7 +9,7 @@ function self:ClientAwake()
         darkGrey = Color.new(40/255, 39/255, 45/255),
         grey = Color.new(63/255, 62/255, 70/255),
         blue = Color.new(13/255, 166/255, 252/255),
-        red = Color.new(251/255, 23/255, 105/255),
+        red = Color.new(249/255, 42/255, 65/255),
         white = Color.new(204/255, 202/255, 220/255),
         lightGrey = Color.new(125/255,124/255,136/255),
     }

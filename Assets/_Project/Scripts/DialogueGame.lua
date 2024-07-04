@@ -67,9 +67,7 @@ function BeginGame(args)
     isOpeningQuestion = true
     isMyTurnToQuestion = args[3]
     arePlayersPlayingForTheFirstTime = args[4]
-    Timer.new(2.5,function() 
-        if(partner ~= nil) then StartTurn() end
-    end,false)
+    StartTurn()
 end
 
 function StartTurn()

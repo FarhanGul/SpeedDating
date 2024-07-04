@@ -19,7 +19,7 @@ local exitButton
 
 -- Functions
 function self:ClientAwake()
-    common.SubscribeEvent(common.EBeginDate(),ShowDialgoueGameIntro)
+    common.SubscribeEvent(common.EBeginDate(),HandleBeginDate)
     common.SubscribeEvent(common.EPrivateMessageSent(),HandlePrivateMessage)
     common.SubscribeEvent(common.ETurnStarted(),ShowGameTurn)
     common.SubscribeEvent(common.EPlayerReceivedQuestionFromServer(),ShowQuestionReceived)
@@ -29,7 +29,13 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EDateRequestReceived(),ShowDateRequestReceived)
     common.SubscribeEvent(common.EIsDateRequestValidReceived(),HandleIsDateRequestValidReceived)
     common.SubscribeEvent(common.EProposalVerdictReceived(),HandleProposalVerdictReceived)
-    if(common.CEnableUIDebugging()) then ShowDebugUI() else ShowTutorial() end
+    if(common.CEnableUIDebugging()) then ShowDebugUI() else
+        if(common.CShowTutorial()) then
+            ShowTutorial()
+        else
+            ShowHome()
+        end
+    end
 end
 
 function HandleIsDateRequestValidReceived(args)
@@ -295,12 +301,8 @@ function ShowGameTurn(args)
     ScrollChatToEnd()
 end
 
-function ShowDialgoueGameIntro(args)
+function HandleBeginDate(args)
     partner = args[2]
-    local panel = ui.RenderFullScreenPanel(root)
-    local label = ui.CreateLabel("You are dating "..args[2].name,ui.FontSize().normal,ui.Colors().white)
-    ui.SetRelativeSize(label, 100, 100)
-    panel:Add(label)
 end
 
 function HandlePrivateMessage(args)
