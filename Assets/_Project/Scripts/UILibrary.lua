@@ -54,7 +54,7 @@ end
 function CreateButton(text,onPressed,color,class)
     local button = UIButton.new()
     SetBackgroundColor(button, color)
-    local label = CreateLabel(text,FontSize().normal,Colors().white)
+    local label = CreateLabel(text,FontSize().normal, color == Color.clear and Colors().red or Colors().white)
     button:Add(label) 
     button:AddToClassList(class == nil and "DefaultButton" or class)
     button:RegisterPressCallback(onPressed)

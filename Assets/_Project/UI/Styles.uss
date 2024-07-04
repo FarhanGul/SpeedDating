@@ -21,6 +21,7 @@
 
 .progress-bar__background
 {
+    margin-top: 6px;
     background-color: #7D7C88;
 }
 
@@ -39,15 +40,16 @@
 }
 
 .QuestionButton{
-    height: 25%;
+    height: 20%;
     width: 98%;
     margin: 1%;
 }
 
 .DefaultButton{
+    border-radius: 5px;
     margin:4px;
-    width:200px;
-    height:30px;
+    width:130px;
+    height:25px;
 }
 
 .DefaultLabel{
@@ -99,6 +101,7 @@
     width: 95%;
     margin-top: 1%;
     margin-bottom: 1%;
+    max-height: 30%;
     border-radius: 5px;
     background-color: #28272D;
     flex-shrink: 0;

@@ -51,7 +51,7 @@ function ShowAskingForPermission()
     local panel = VisualElement.new()
     panel:Add(ui.CreateLabel("Please wait",ui.FontSize().heading))
     panel:Add(ui.CreateLabel("Asking for permission",ui.FontSize().normal,ui.Colors().lightGrey))
-    panel:Add(ui.CreateButton("Cancel Request", function()
+    panel:Add(ui.CreateButton("Cancel", function()
         common.InvokeEvent(common.ECancelDateRequest())
     end,ui.Colors().red))
     root:Add(panel)
@@ -208,7 +208,7 @@ function ShowDialgoueGame()
     --Exit Button
     exitButton = ui.CreateButton("Leave", function()
         ShowExitConfirmation()
-    end, ui.Colors().red, nil)
+    end, ui.Colors().red)
     
     -- Construct
     mainPanel:Add(gamePanel)
