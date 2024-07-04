@@ -161,7 +161,7 @@ function CVisibleTopRanks() return 8 end
 function CRelationshipIdDelimiter() return "," end 
 -- Development Constants
 function CUseProductionStorage() return false end
-function CShowTutorial() return false end
+function CShowTutorial() return true end
 function CEnableMusic() return true end
 function CEnableDevCommands() return false end
 function CEnableUIDebugging() return false end

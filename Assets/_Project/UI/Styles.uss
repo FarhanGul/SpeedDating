@@ -128,3 +128,7 @@
 .JustifyCenter{
     justify-content: center;
 }
+
+.Hide{
+    display: none;
+}

@@ -15,7 +15,7 @@ local gamePanel : VisualElement
 local progressBar : UIProgressBar
 local partner
 local progress
-local exitButton
+local exitButton : UIButton
 
 -- Functions
 function self:ClientAwake()
@@ -97,17 +97,32 @@ function ShowVerdictPending(panel)
     panel:Add(ui.CreateLabel("Please wait for your partners verdict",ui.FontSize().heading,ui.Colors().white))
 end
 
-function ShowResultStatusBothAccepted(panel)
-    panel:Add(ui.CreateLabel("Date finished",ui.FontSize().heading,ui.Colors().white))
-    panel:Add(ui.CreateLabel("Keep dating to improve your relationship score",ui.FontSize().normal,ui.Colors().lightGrey))
-    panel:Add(ui.CreateButton("Date again", function()
+function ShowDateEndModal()
+    exitButton:AddToClassList("Hide")
+    local modalContainer = VisualElement.new()
+    ui.SetRelativeSize(modalContainer, 100, 100)
+    local modal = VisualElement.new()
+    modal:Add(ui.CreateLabel("Keep dating to improve your relationship score",ui.FontSize().normal,ui.Colors().lightGrey))
+    modal:Add(ui.CreateButton("Date again", function()
+        root:Remove(modalContainer)
+        exitButton:RemoveFromClassList("Hide")
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayAgain())
     end,ui.Colors().blue))
-    panel:Add(ui.CreateLabel("OR",ui.FontSize().heading,ui.Colors().white))
-    panel:Add(ui.CreateButton("Catch you later", function()
+    modal:Add(ui.CreateLabel("OR",ui.FontSize().heading,ui.Colors().white))
+    modal:Add(ui.CreateButton("Leave", function()
+        root:Remove(modalContainer)
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
     end,ui.Colors().red))
-    panel:Add(ui.CreateLabel("Speed date with different partners to improve your dating score",ui.FontSize().normal,ui.Colors().lightGrey))
+    modal:Add(ui.CreateLabel("Speed date with different partners to improve your dating score",ui.FontSize().normal,ui.Colors().lightGrey))
+    modal:AddToClassList("Modal")
+    modalContainer:AddToClassList("ModalContainer")
+    modalContainer:Add(modal)
+    root:Add(modalContainer)
+end
+
+function ShowResultStatusBothAccepted(panel)
+    ShowDateEndModal()
+    panel:Add(ui.CreateLabel("Date finished",ui.FontSize().heading,ui.Colors().white))
 end
 
 function ShowResultStatusRejected(panel)
@@ -349,7 +364,8 @@ end
 function ShowHome()
     root:Clear()
     local panel = VisualElement.new()
-    panel:Add(ui.CreateLabel("Tap on a player to send a date request",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("Start dating",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("Tap on an available player to send a date request",ui.FontSize().normal,ui.Colors().lightGrey))
     panel:Add(ui.CreateButton("Ranking",ShowRanking ,ui.Colors().blue))
     if(musicManager.GetIsMuted()) then
         panel:Add(ui.CreateButton("Enable Music",function()
@@ -367,11 +383,12 @@ end
 
 function ShowTutorial()
     local panel = ui.RenderFullScreenPanel(root)
+    ui.SetPadding(panel,8)
     panel:AddToClassList("VerticalLayout")
-    panel:Add(ui.CreateLabel("Welcome to Find A Bae!",ui.FontSize().heading,ui.Colors().white))
+    panel:Add(ui.CreateLabel("Welcome to Find A Bae",ui.FontSize().heading,ui.Colors().white))
     local categoryBlock = VisualElement.new()
     categoryBlock:Add(ui.CreateLabel("How to play",ui.FontSize().normal,ui.Colors().white))
-    categoryBlock:Add(ui.CreateLabel("Tap on player to send a date request. If they accept, start chatting! Keep the conversation flowing, our curated list of questions are there to spark your creativity",ui.FontSize().normal,ui.Colors().lightGrey))
+    categoryBlock:Add(ui.CreateLabel("Tap on an available player to send a date request. If they accept, start chatting! Keep the conversation flowing, our curated list of questions are there to spark your creativity",ui.FontSize().normal,ui.Colors().lightGrey))
     panel:Add(categoryBlock)
     categoryBlock = VisualElement.new()
     categoryBlock:Add(ui.CreateLabel("Tips for a great date",ui.FontSize().normal,ui.Colors().white))

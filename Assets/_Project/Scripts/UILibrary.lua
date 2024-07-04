@@ -69,6 +69,13 @@ function SetMargin(ve:VisualElement,amount)
     ve.style.marginLeft = StyleLength.new(Length.new(scaledAmount))
 end
 
+function SetPadding(ve:VisualElement,amount)
+    ve.style.paddingTop = StyleLength.new(Length.new(amount))
+    ve.style.paddingRight = StyleLength.new(Length.new(amount))
+    ve.style.paddingBottom = StyleLength.new(Length.new(amount))
+    ve.style.paddingLeft = StyleLength.new(Length.new(amount))
+end
+
 function SetBackgroundColor(ve:VisualElement,color)
     ve.style.backgroundColor = StyleColor.new(color)
 end
