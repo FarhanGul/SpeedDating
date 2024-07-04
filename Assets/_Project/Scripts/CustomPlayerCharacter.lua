@@ -13,6 +13,10 @@ function self:ClientAwake()
     common.SubscribeEvent(common.EUpdatePlayerDatingStatus(),HandleUpdatePlayerDatingStatus)
 end
 
+function self:ClientOnDestroy()
+    common.UnsubscribeEvent(common.EUpdatePlayerDatingStatus(),HandleUpdatePlayerDatingStatus)
+end
+
 function HandleTapped()
     if(character.player ~= client.localPlayer) then
         common.InvokeEvent(common.EPlayerTapped(),character.player)

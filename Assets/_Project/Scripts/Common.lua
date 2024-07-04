@@ -42,7 +42,8 @@ end
 
 function UnsubscribeEvent(eventName,callback)
     if(events[eventName] == nil) then events[eventName] = {} end
-    table.remove(events[eventName],callback)
+    local index = table.find(events[eventName],callback)
+    if(index ~= nil) then table.remove(events[eventName],index) end
 end
 
 function ShuffleArray(arr)
