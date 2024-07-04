@@ -2,15 +2,10 @@
 local common = require("Common")
 
 -- Private
-local partner
+local playersDatingStatus
 
 function self:ClientAwake()
-    common.SubscribeEvent(common.EBeginDate(),function(args)
-        partner = args[2]
-    end)
-    common.SubscribeEvent(common.EEndDate(),function()
-        partner = nil
-    end)
+    common.SubscribeEvent(common.EUpdatePlayerDatingStatus(),HandleUpdatePlayerDatingStatus)
     Chat.TextMessageReceivedHandler:Connect(function(channel,_from,_message)
         if( common.CEnableDevCommands() and string.sub(_message,1,1) == "@") then
             if(_from == client.localPlayer) then
@@ -18,14 +13,13 @@ function self:ClientAwake()
             end
             return
         end
-        if(partner ~= nil) then
-            if(_from == client.localPlayer or _from == partner) then
-                common.InvokeEvent(common.EPrivateMessageSent(),_from,_message)
-            end
+        if( playersDatingStatus[_from.name] == common.NDatingStatusDating() ) then
+            common.InvokeEvent(common.EPrivateMessageSent(),_from,_message)
         else
             Chat:DisplayTextMessage(channel, _from, _message)
         end
     end)
+    playersDatingStatus = {}
 end
 
 function HandleDevMode(message)
@@ -40,4 +34,8 @@ function HandleDevMode(message)
     elseif(message == "pl") then
         common.InvokeEvent(common.ESubmitVerdict(),common.NVerdictPlayLater())
     end
+end
+
+function HandleUpdatePlayerDatingStatus(args)
+    playersDatingStatus[args[1]] = args[2]
 end
