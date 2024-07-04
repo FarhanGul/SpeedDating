@@ -105,6 +105,8 @@ function ServerHandlesPlayerDisconnected(player)
     for k,v in currentlyDatingCouples do
         if (k == player or v == player) then
             currentlyDatingCouples[k] = nil
+            local other = k == player and v or k
+            playersDatingStatus[other.name] = common.NDatingStatusFree()
             isDataStatusSendPending = true
         end
     end
