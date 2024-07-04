@@ -64,7 +64,8 @@ end
 
 function ReplaceEmojiCodes(inputString)
     -- Define the pattern to match 'u' followed by one or more hexadecimal digits
-    local pattern = "u(%x%x%x%x)"
+    -- local pattern = "u(%x%x%x%x)"
+    local pattern = "([^%w])u(%x%x%x%x)([^%w])"
 
     -- Use gsub to replace the matched pattern
     local result = string.gsub(inputString, pattern, function(code)
